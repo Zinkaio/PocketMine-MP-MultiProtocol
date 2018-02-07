@@ -81,7 +81,7 @@ namespace pocketmine {
 
 	const NAME = "PocketMine-MP";
 	const VERSION = "1.7dev";
-	const API_VERSION = "3.0.0-ALPHA10";
+	const API_VERSION = "3.0.0-ALPHA11";
 	const CODENAME = "[REDACTED]";
 
 	const MIN_PHP_VERSION = "7.2.0RC3";
@@ -173,8 +173,8 @@ namespace pocketmine {
 
 	$opts = getopt("", ["data:", "plugins:", "no-wizard", "enable-profiler"]);
 
-	define('pocketmine\DATA', isset($opts["data"]) ? $opts["data"] . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR);
-	define('pocketmine\PLUGIN_PATH', isset($opts["plugins"]) ? $opts["plugins"] . DIRECTORY_SEPARATOR : \getcwd() . DIRECTORY_SEPARATOR . "plugins" . DIRECTORY_SEPARATOR);
+	define('pocketmine\DATA', isset($opts["data"]) ? $opts["data"] . DIRECTORY_SEPARATOR : \realpath(\getcwd()) . DIRECTORY_SEPARATOR);
+	define('pocketmine\PLUGIN_PATH', isset($opts["plugins"]) ? $opts["plugins"] . DIRECTORY_SEPARATOR : \realpath(\getcwd()) . DIRECTORY_SEPARATOR . "plugins" . DIRECTORY_SEPARATOR);
 
 	Terminal::init();
 
@@ -495,8 +495,9 @@ namespace pocketmine {
 			"curl" => "cURL",
 			"json" => "JSON",
 			"mbstring" => "Multibyte String",
-			"yaml" => "YAML",
+			"openssl" => "OpenSSL",
 			"sockets" => "Sockets",
+			"yaml" => "YAML",
 			"zip" => "Zip",
 			"zlib" => "Zlib"
 		];
