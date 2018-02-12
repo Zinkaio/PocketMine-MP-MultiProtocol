@@ -193,7 +193,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $sessionAdapter;
 
 	/** @var int */
-	protected $protocol = -1;
+	public $protocol = -1;
 
 	/** @var bool */
 	public $playedBefore;
@@ -1771,8 +1771,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->protocol = $packet->protocol;
 
-		if($packet->protocol !== ProtocolInfo::CURRENT_PROTOCOL){
-			if($packet->protocol < ProtocolInfo::CURRENT_PROTOCOL){
+        if (!in_array($packet->protocol, ProtocolInfo::ACCEPTED_PROTOCOLS)) {
+            if ($packet->protocol < ProtocolInfo::CURRENT_PROTOCOL) {
 				$this->sendPlayStatus(PlayStatusPacket::LOGIN_FAILED_CLIENT, true);
 			}else{
 				$this->sendPlayStatus(PlayStatusPacket::LOGIN_FAILED_SERVER, true);
@@ -2042,6 +2042,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk->rainLevel = 0; //TODO: implement these properly
 		$pk->lightningLevel = 0;
 		$pk->commandsEnabled = true;
+		$pk->player = $this;
 		$pk->levelId = "";
 		$pk->worldName = $this->server->getMotd();
 		$this->dataPacket($pk);

@@ -29,6 +29,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
+use pocketmine\Player;
 
 class StartGamePacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::START_GAME_PACKET;
@@ -98,6 +99,8 @@ class StartGamePacket extends DataPacket{
 	public $xboxLiveBroadcastMode = 0; //TODO: find values
 	/** @var int */
 	public $serverChunkTickRadius = 4; //TODO (leave as default for now)
+    /** @var Player */
+    public $player;
 
 	/** @var string */
 	public $levelId = ""; //base64 string, usually the same as world folder name in vanilla
@@ -145,7 +148,9 @@ class StartGamePacket extends DataPacket{
 		$this->hasTrustPlayersEnabled = $this->getBool();
 		$this->defaultPlayerPermission = $this->getVarInt();
 		$this->xboxLiveBroadcastMode = $this->getVarInt();
-		$this->serverChunkTickRadius = $this->getLInt();
+		if($this->player->protocol === 201){
+            $this->serverChunkTickRadius = $this->getLInt();
+        }
 
 		$this->levelId = $this->getString();
 		$this->worldName = $this->getString();
@@ -189,7 +194,9 @@ class StartGamePacket extends DataPacket{
 		$this->putBool($this->hasTrustPlayersEnabled);
 		$this->putVarInt($this->defaultPlayerPermission);
 		$this->putVarInt($this->xboxLiveBroadcastMode);
-		$this->putLInt($this->serverChunkTickRadius);
+        if($this->player->protocol === 201){
+            $this->putLInt($this->serverChunkTickRadius);
+        }
 
 		$this->putString($this->levelId);
 		$this->putString($this->worldName);

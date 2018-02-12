@@ -39,7 +39,8 @@ interface ProtocolInfo{
 	/**
 	 * Actual Minecraft: PE protocol version
 	 */
-	public const CURRENT_PROTOCOL = 201;
+    public const CURRENT_PROTOCOL = 201;
+    public const ACCEPTED_PROTOCOLS = [160, self::CURRENT_PROTOCOL];
 	/**
 	 * Current Minecraft PE version reported by the server. This is usually the earliest currently supported version.
 	 */
