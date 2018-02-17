@@ -1671,21 +1671,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						}
 						$this->inAirTicks = 0;
 					}else{
-						if(!$this->allowFlight and $this->inAirTicks > 10 and !$this->isSleeping() and !$this->isImmobile()){
-							$expectedVelocity = (-$this->gravity) / $this->drag - ((-$this->gravity) / $this->drag) * exp(-$this->drag * ($this->inAirTicks - $this->startAirTicks));
-							$diff = ($this->speed->y - $expectedVelocity) ** 2;
-
-							if(!$this->hasEffect(Effect::JUMP) and !$this->hasEffect(Effect::LEVITATION) and $diff > 0.6 and $expectedVelocity < $this->speed->y and !$this->server->getAllowFlight()){
-								if($this->inAirTicks < 100){
-									$this->setMotion(new Vector3(0, $expectedVelocity, 0));
-								}elseif($this->kick($this->server->getLanguage()->translateString("kick.reason.cheat", ["%ability.flight"]))){
-									$this->timings->stopTiming();
-
-									return false;
-								}
-							}
-						}
-
 						$this->inAirTicks += $tickDiff;
 					}
 				}
