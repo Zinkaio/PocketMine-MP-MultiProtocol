@@ -33,7 +33,7 @@ use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\item\Consumable;
 use pocketmine\item\FoodSource;
-use pocketmine\item\Item as ItemItem;
+use pocketmine\item\Item;
 use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteArrayTag;
@@ -208,6 +208,15 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$this->setFood($amount);
 	}
 
+	/**
+	 * Returns whether this Human may consume objects requiring hunger.
+	 *
+	 * @return bool
+	 */
+	public function isHungry() : bool{
+		return $this->getFood() < $this->getMaxFood();
+	}
+
 	public function getSaturation() : float{
 		return $this->attributeMap->getAttribute(Attribute::SATURATION)->getValue();
 	}
@@ -282,7 +291,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	public function consumeObject(Consumable $consumable) : bool{
 		if($consumable instanceof FoodSource){
-			if($consumable->requiresHunger() and $this->getFood() >= $this->getMaxFood()){
+			if($consumable->requiresHunger() and !$this->isHungry()){
 				return false;
 			}
 
@@ -517,9 +526,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 				if($slot >= 0 and $slot < 9){ //Hotbar
 					//Old hotbar saving stuff, ignore it
 				}elseif($slot >= 100 and $slot < 104){ //Armor
-					$this->armorInventory->setItem($slot - 100, ItemItem::nbtDeserialize($item));
+					$this->armorInventory->setItem($slot - 100, Item::nbtDeserialize($item));
 				}else{
-					$this->inventory->setItem($slot - 9, ItemItem::nbtDeserialize($item));
+					$this->inventory->setItem($slot - 9, Item::nbtDeserialize($item));
 				}
 			}
 		}
@@ -528,7 +537,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		if($enderChestInventoryTag !== null){
 			/** @var CompoundTag $item */
 			foreach($enderChestInventoryTag as $i => $item){
-				$this->enderChestInventory->setItem($item->getByte("Slot"), ItemItem::nbtDeserialize($item));
+				$this->enderChestInventory->setItem($item->getByte("Slot"), Item::nbtDeserialize($item));
 			}
 		}
 

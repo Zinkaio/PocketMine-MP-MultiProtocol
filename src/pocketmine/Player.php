@@ -32,8 +32,8 @@ use pocketmine\entity\Effect;
 use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
-use pocketmine\entity\Item as DroppedItem;
 use pocketmine\entity\Living;
+use pocketmine\entity\object\ItemEntity;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\Skin;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
@@ -197,13 +197,41 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/** @var int */
 	public $protocol = -1;
 
+	/** @var string */
+	protected $ip;
+	/** @var int */
+	protected $port;
+
+	/** @var bool[] */
+	private $needACK = [];
+
+	/** @var DataPacket[] */
+	private $batchedPackets = [];
+
+	/**
+	 * @var int
+	 * Last measurement of player's latency in milliseconds.
+	 */
+	protected $lastPingMeasure = 1;
+
+
+	/** @var float */
+	public $creationTime = 0;
+
 	/** @var bool */
-	public $playedBefore;
-	public $spawned = false;
 	public $loggedIn = false;
-	public $gamemode;
+
 	/** @var bool */
-	protected $authenticated = false;
+	public $spawned = false;
+
+	/** @var string */
+	protected $username = "";
+	/** @var string */
+	protected $iusername = "";
+	/** @var string */
+	protected $displayName = "";
+	/** @var int */
+	protected $randomClientId;
 	/** @var string */
 	protected $xuid = "";
 
@@ -214,91 +242,84 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $windowIndex = [];
 	/** @var bool[] */
 	protected $permanentWindows = [];
-
-	protected $messageCounter = 2;
-
-	private $clientSecret;
-
-	/** @var Vector3 */
-	public $speed = null;
-
-	public $achievements = [];
-
 	/** @var PlayerCursorInventory */
 	protected $cursorInventory;
-
 	/** @var CraftingGrid */
 	protected $craftingGrid = null;
 	/** @var CraftingTransaction|null */
 	protected $craftingTransaction = null;
 
-	public $creationTime = 0;
-
-	protected $randomClientId;
-
-	protected $ip;
+	/** @var int */
+	protected $messageCounter = 2;
+	/** @var bool */
 	protected $removeFormat = true;
-	protected $port;
-	protected $username = "";
-	protected $iusername = "";
-	protected $displayName = "";
-	protected $startAction = -1;
-	/** @var Vector3|null */
-	protected $sleeping = null;
 
+	/** @var bool[] name of achievement => bool */
+	protected $achievements = [];
+	/** @var bool */
+	protected $playedBefore;
+	/** @var int */
+	protected $gamemode;
+
+	/** @var int */
 	private $loaderId = 0;
-
-	protected $stepHeight = 0.6;
-
+	/** @var bool[] chunkHash => bool (true = sent, false = needs sending) */
 	public $usedChunks = [];
-	protected $chunkLoadCount = 0;
+	/** @var bool[] chunkHash => dummy */
 	protected $loadQueue = [];
+	/** @var int */
 	protected $nextChunkOrderRun = 5;
+
+	/** @var int */
+	protected $viewDistance = -1;
+	/** @var int */
+	protected $spawnThreshold;
+	/** @var int */
+	protected $chunkLoadCount = 0;
+	/** @var int */
+	protected $chunksPerTick;
 
 	/** @var bool[] map: raw UUID (string) => bool */
 	protected $hiddenPlayers = [];
 
 	/** @var Vector3|null */
 	protected $newPosition;
-
+	/** @var Vector3|null */
+	public $speed = null;
 	/** @var bool */
 	protected $isTeleporting = false;
-
-	protected $viewDistance = -1;
-	protected $chunksPerTick;
-	protected $spawnThreshold;
-	/** @var null|WeakPosition */
-	private $spawnPosition = null;
-
+	/** @var int */
 	protected $inAirTicks = 0;
+	/** @var int */
 	protected $startAirTicks = 5;
-
-	//TODO: Abilities
-	protected $autoJump = true;
-	protected $allowFlight = false;
-	protected $flying = false;
-
+	/** @var float */
+	protected $stepHeight = 0.6;
+	/** @var bool */
 	protected $allowMovementCheats = false;
 
-	private $needACK = [];
+	/** @var Vector3|null */
+	protected $sleeping = null;
+	/** @var WeakPosition|null */
+	private $spawnPosition = null;
 
-	private $batchedPackets = [];
+	//TODO: Abilities
+	/** @var bool */
+	protected $autoJump = true;
+	/** @var bool */
+	protected $allowFlight = false;
+	/** @var bool */
+	protected $flying = false;
 
 	/** @var PermissibleBase */
 	private $perm = null;
 
 	/** @var int|null */
 	protected $lineHeight = null;
-
 	/** @var string */
 	protected $locale = "en_US";
 
-	/**
-	 * @var int
-	 * Last measurement of player's latency in milliseconds.
-	 */
-	protected $lastPingMeasure = 1;
-
+	/** @var int */
+	protected $startAction = -1;
 	/** @var int[] ID => ticks map */
 	protected $usedItemsCooldown = [];
 
@@ -323,10 +344,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 */
 	public function getClientId(){
 		return $this->randomClientId;
-	}
-
-	public function getClientSecret(){
-		return $this->clientSecret;
 	}
 
 	public function isBanned() : bool{
@@ -355,7 +372,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function isAuthenticated() : bool{
-		return $this->authenticated;
+		return $this->xuid !== "";
 	}
 
 	/**
@@ -668,6 +685,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 			$aliases = $command->getAliases();
 			if(!empty($aliases)){
+				if(!\in_array($data->commandName, $aliases, true)){
+					//work around a client bug which makes the original name not show when aliases are used
+					$aliases[] = $data->commandName;
+				}
 				$data->aliases = new CommandEnum();
 				$data->aliases->enumName = ucfirst($command->getName()) . "Aliases";
 				$data->aliases->enumValues = $aliases;
@@ -1640,9 +1661,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function setMotion(Vector3 $mot){
 		if(parent::setMotion($mot)){
-			if($this->chunk !== null){
-				$this->broadcastMotion();
-			}
+			$this->broadcastMotion();
 
 			if($this->motionY > 0){
 				$this->startAirTicks = (-log($this->gravity / ($this->gravity + $this->drag * $this->motionY)) / $this->drag) * 2 + 5;
@@ -1739,6 +1758,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		return 0.0;
+	}
+
+	public function isHungry() : bool{
+		return $this->isSurvival() and parent::isHungry();
 	}
 
 	public function canBreathe() : bool{
@@ -1908,7 +1931,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->sendDataPacket($pk, false, $immediate);
 	}
 
-	public function onVerifyCompleted(LoginPacket $packet, ?string $error, bool $isAuthenticated) : void{
+	public function onVerifyCompleted(LoginPacket $packet, ?string $error, bool $signedByMojang) : void{
 		if($this->closed){
 			return;
 		}
@@ -1918,27 +1941,29 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return;
 		}
 
-		$this->authenticated = $isAuthenticated;
+		$xuid = $packet->xuid;
 
-		if(!$isAuthenticated){
+		if(!$signedByMojang and $xuid !== ""){
+			$this->server->getLogger()->warning($this->getName() . " has an XUID, but their login keychain is not signed by Mojang");
+			$xuid = "";
+		}
+
+		if($xuid === ""){
+			if($signedByMojang){
+				$this->server->getLogger()->error($this->getName() . " should have an XUID, but none found");
+			}
+
 			if($this->server->requiresAuthentication() and $this->kick("disconnectionScreen.notAuthenticated", false)){ //use kick to allow plugins to cancel this
 				return;
 			}
 
 			$this->server->getLogger()->debug($this->getName() . " is NOT logged into to Xbox Live");
-			if($packet->xuid !== ""){
-				$this->server->getLogger()->warning($this->getName() . " has an XUID, but their login keychain is not signed by Mojang");
-			}
 		}else{
 			$this->server->getLogger()->debug($this->getName() . " is logged into Xbox Live");
-
-			if($packet->xuid === ""){
-				$this->server->getLogger()->error($this->getName() . " should have an XUID, but none found");
-			}
-			$this->xuid = $packet->xuid; //don't set this unless we know they are logged in
+			$this->xuid = $xuid;
 		}
 
-		//TODO: get data from loginpacket (xbox user ID and stuff), add events
+		//TODO: encryption
 
 		$this->processLogin();
 	}
@@ -2447,7 +2472,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						if(!$target->isAlive()){
 							return true;
 						}
-						if($target instanceof DroppedItem or $target instanceof Arrow){
+						if($target instanceof ItemEntity or $target instanceof Arrow){
 							$this->kick("Attempting to attack an invalid entity");
 							$this->server->getLogger()->warning($this->getServer()->getLanguage()->translateString("pocketmine.player.invalidEntity", [$this->getName()]));
 							return false;
@@ -2862,7 +2887,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->resetCraftingGridType();
 
 		$pos = new Vector3($packet->x, $packet->y, $packet->z);
-		if($pos->distanceSquared($this) > 10000){
+		if($pos->distanceSquared($this) > 10000 or $this->level->checkSpawnProtection($this, $pos)){
 			return true;
 		}
 

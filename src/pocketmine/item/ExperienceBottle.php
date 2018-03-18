@@ -21,13 +21,18 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\math;
+namespace pocketmine\item;
 
-
-abstract class VectorMath{
-
-	public static function getDirection2D($azimuth){
-		return new Vector2(cos($azimuth), sin($azimuth));
+class ExperienceBottle extends ProjectileItem{
+	public function __construct(int $meta = 0){
+		parent::__construct(self::EXPERIENCE_BOTTLE, $meta, "Bottle o' Enchanting");
 	}
 
+	public function getProjectileEntityType() : string{
+		return "ThrownExpBottle";
+	}
+
+	public function getThrowForce() : float{
+		return 0.7;
+	}
 }
