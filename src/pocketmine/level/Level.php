@@ -690,7 +690,7 @@ class Level implements ChunkManager, Metadatable{
 	 * WARNING: Do not use this, it's only for internal use.
 	 * Changes to this function won't be recorded on the version.
 	 *
-	 * @param Player[] ...$targets If empty, will send to all players in the level.
+	 * @param Player ...$targets If empty, will send to all players in the level.
 	 */
 	public function sendTime(Player ...$targets){
 		$pk = new SetTimePacket();
@@ -1549,8 +1549,7 @@ class Level implements ChunkManager, Metadatable{
 				$this->server->getPluginManager()->callEvent($ev = new BlockUpdateEvent($block));
 				if(!$ev->isCancelled()){
 					foreach($this->getNearbyEntities(new AxisAlignedBB($block->x - 1, $block->y - 1, $block->z - 1, $block->x + 2, $block->y + 2, $block->z + 2)) as $entity){
-						$entity->setForceMovementUpdate();
-						$entity->scheduleUpdate();
+						$entity->onNearbyBlockChange();
 					}
 					$ev->getBlock()->onNearbyBlockChange();
 					$this->scheduleNeighbourBlockUpdates($pos);
@@ -2943,7 +2942,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * @param Player[] ...$targets
+	 * @param Player ...$targets
 	 */
 	public function sendDifficulty(Player ...$targets){
 		if(count($targets) === 0){

@@ -84,19 +84,13 @@ class NetworkBinaryStream extends BinaryStream{
 		}
 
 		//TODO
-		$canPlaceOn = $this->getVarInt();
-		if($canPlaceOn > 0){
-			for($i = 0; $i < $canPlaceOn; ++$i){
-				$this->getString();
-			}
+		for($i = 0, $canPlaceOn = $this->getVarInt(); $i < $canPlaceOn; ++$i){
+			$this->getString();
 		}
 
 		//TODO
-		$canDestroy = $this->getVarInt();
-		if($canDestroy > 0){
-			for($i = 0; $i < $canDestroy; ++$i){
-				$this->getString();
-			}
+		for($i = 0, $canDestroy = $this->getVarInt(); $i < $canDestroy; ++$i){
+			$this->getString();
 		}
 
 		return ItemFactory::get($id, $data, $cnt, $nbt);
@@ -260,7 +254,7 @@ class NetworkBinaryStream extends BinaryStream{
 	/**
 	 * Writes a list of Attributes to the packet buffer using the standard format.
 	 *
-	 * @param Attribute[] ...$attributes
+	 * @param Attribute ...$attributes
 	 */
 	public function putAttributeList(Attribute ...$attributes) : void{
 		$this->putUnsignedVarInt(count($attributes));
