@@ -74,6 +74,7 @@ use pocketmine\inventory\PlayerCursorInventory;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
+use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\Consumable;
 use pocketmine\item\Item;
 use pocketmine\item\WritableBook;
@@ -1825,7 +1826,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->protocol = $packet->protocol;
 
-        if (!in_array($packet->protocol, ProtocolInfo::ACCEPTED_PROTOCOLS)) {
+        if($packet->protocol !== ProtocolInfo::CURRENT_PROTOCOL){
             if ($packet->protocol < ProtocolInfo::CURRENT_PROTOCOL) {
 				$this->sendPlayStatus(PlayStatusPacket::LOGIN_FAILED_CLIENT, true);
 			}else{
@@ -2288,13 +2289,16 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				//we get the actions for this in several packets, so we need to wait until we have all the pieces before
 				//trying to execute it
 
-				$result = $this->craftingTransaction->execute();
-				if(!$result){
-					$this->server->getLogger()->debug("Failed to execute crafting transaction from " . $this->getName());
+				$ret = true;
+				try{
+					$this->craftingTransaction->execute();
+				}catch(TransactionValidationException $e){
+					$this->server->getLogger()->debug("Failed to execute crafting transaction for " . $this->getName() . ": " . $e->getMessage());
+					$ret = false;
 				}
 
 				$this->craftingTransaction = null;
-				return $result;
+				return $ret;
 			}
 
 			return true;
@@ -2308,10 +2312,13 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$this->setUsingItem(false);
 				$transaction = new InventoryTransaction($this, $actions);
 
-				if(!$transaction->execute()){
-					$this->server->getLogger()->debug("Failed to execute inventory transaction from " . $this->getName() . " with actions: " . json_encode($packet->actions));
+				try{
+					$transaction->execute();
+				}catch(TransactionValidationException $e){
+					$this->server->getLogger()->debug("Failed to execute inventory transaction from " . $this->getName() . ": " . $e->getMessage());
+					$this->server->getLogger()->debug("Actions: " . json_encode($packet->actions));
 
-					return false; //oops!
+					return false;
 				}
 
 				//TODO: fix achievement for getting iron from furnace
@@ -2764,7 +2771,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				break; //TODO
 			case PlayerActionPacket::ACTION_CONTINUE_BREAK:
 				$block = $this->level->getBlock($pos);
-				$this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_PARTICLE_PUNCH_BLOCK, $block->getId() | ($block->getDamage() << 8) | ($packet->face << 16));
+				$this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_PARTICLE_PUNCH_BLOCK, BlockFactory::toStaticRuntimeId($block->getId(), $block->getDamage()) | ($packet->face << 24));
+				//TODO: destroy-progress level event
 				break;
 			default:
 				$this->server->getLogger()->debug("Unhandled/unknown player action type " . $packet->action . " from " . $this->getName());
@@ -2953,7 +2961,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function handleBookEdit(BookEditPacket $packet) : bool{
 		/** @var WritableBook $oldBook */
-		$oldBook = $this->inventory->getItem($packet->inventorySlot - 9);
+		$oldBook = $this->inventory->getItem($packet->inventorySlot);
 		if($oldBook->getId() !== Item::WRITABLE_BOOK){
 			return false;
 		}
@@ -2994,7 +3002,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return true;
 		}
 
-		$this->getInventory()->setItem($packet->inventorySlot - 9, $event->getNewBook());
+		$this->getInventory()->setItem($packet->inventorySlot, $event->getNewBook());
 
 		return true;
 	}
@@ -3300,7 +3308,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public function sendWhisper(string $sender, string $message){
 		$pk = new TextPacket();
 		$pk->type = TextPacket::TYPE_WHISPER;
-		$pk->source = $sender;
+		$pk->sourceName = $sender;
 		$pk->message = $message;
 		$this->dataPacket($pk);
 	}

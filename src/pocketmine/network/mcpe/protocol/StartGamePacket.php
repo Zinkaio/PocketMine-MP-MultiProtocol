@@ -99,8 +99,12 @@ class StartGamePacket extends DataPacket{
 	public $xboxLiveBroadcastMode = 0; //TODO: find values
 	/** @var int */
 	public $serverChunkTickRadius = 4; //TODO (leave as default for now)
-    /** @var Player */
-    public $player;
+	/** @var bool */
+	public $hasPlatformBroadcast = false;
+	/** @var int */
+	public $platformBroadcastMode = 0;
+	/** @var bool */
+	public $xboxLiveBroadcastIntent = false;
 
 	/** @var string */
 	public $levelId = ""; //base64 string, usually the same as world folder name in vanilla
@@ -148,9 +152,10 @@ class StartGamePacket extends DataPacket{
 		$this->hasTrustPlayersEnabled = $this->getBool();
 		$this->defaultPlayerPermission = $this->getVarInt();
 		$this->xboxLiveBroadcastMode = $this->getVarInt();
-		if($this->player->protocol === 201){
-            $this->serverChunkTickRadius = $this->getLInt();
-        }
+		$this->serverChunkTickRadius = $this->getLInt();
+		$this->hasPlatformBroadcast = $this->getBool();
+		$this->platformBroadcastMode = $this->getUnsignedVarInt();
+		$this->xboxLiveBroadcastIntent = $this->getBool();
 
 		$this->levelId = $this->getString();
 		$this->worldName = $this->getString();
@@ -194,9 +199,10 @@ class StartGamePacket extends DataPacket{
 		$this->putBool($this->hasTrustPlayersEnabled);
 		$this->putVarInt($this->defaultPlayerPermission);
 		$this->putVarInt($this->xboxLiveBroadcastMode);
-        if($this->player->protocol === 201){
-            $this->putLInt($this->serverChunkTickRadius);
-        }
+		$this->putLInt($this->serverChunkTickRadius);
+		$this->putBool($this->hasPlatformBroadcast);
+		$this->putUnsignedVarInt($this->platformBroadcastMode);
+		$this->putBool($this->xboxLiveBroadcastIntent);
 
 		$this->putString($this->levelId);
 		$this->putString($this->worldName);
