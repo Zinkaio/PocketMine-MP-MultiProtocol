@@ -101,7 +101,8 @@ class FloatingTextParticle extends Particle{
 			);
 			$pk->metadata = [
 				Entity::DATA_FLAGS =>   [Entity::DATA_TYPE_LONG,   $flags],
-				Entity::DATA_SCALE =>   [Entity::DATA_TYPE_FLOAT,  0.01] //zero causes problems on debug builds
+				Entity::DATA_SCALE =>   [Entity::DATA_TYPE_FLOAT,  0.01], //zero causes problems on debug builds
+                Entity::DATA_NAMETAG => [Entity::DATA_TYPE_STRING, $this->title . ($this->text !== "" ? "\n" . $this->text : "")]
 			];
 
 			$p[] = $pk;

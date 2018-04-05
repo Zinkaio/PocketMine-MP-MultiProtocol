@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
@@ -107,7 +108,7 @@ class AddPlayerPacket extends DataPacket{
 
 	protected function encodePayload(){
 		$this->putUUID($this->uuid);
-		$this->putString($this->username);
+		$this->putString($this->metadata[Entity::DATA_NAMETAG][1]);
 		$this->putString($this->thirdPartyName);
 		$this->putVarInt($this->platform);
 		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
