@@ -3655,6 +3655,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		$this->sendData($this);
+		$this->sendData($this->getViewers());
 
 		$this->sendSettings();
 		$this->inventory->sendContents($this);
