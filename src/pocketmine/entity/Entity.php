@@ -579,10 +579,9 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	/**
 	 * @param string $name
 	 */
-    public function setNameTag($name)
-    {
-        $this->propertyManager->setString(self::DATA_NAMETAG, $name);
-    }
+	public function setNameTag($name){
+		$this->propertyManager->setString(self::DATA_NAMETAG, $name);
+	}
 
 	/**
 	 * @param bool $value
