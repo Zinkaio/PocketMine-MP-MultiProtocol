@@ -111,19 +111,25 @@ class CraftingTransaction extends InventoryTransaction{
 
 		$this->matchItems($this->outputs, $this->inputs);
 
-		$this->recipe = $this->source->getServer()->getCraftingManager()->matchRecipe($this->source->getCraftingGrid(), $this->outputs);
-		if($this->recipe === null){
-			throw new TransactionValidationException("Unable to match a recipe to transaction");
+		$failed = 0;
+		foreach($this->source->getServer()->getCraftingManager()->matchRecipeByOutputs($this->outputs) as $recipe){
+			try{
+				//compute number of times recipe was crafted
+				$this->repetitions = $this->matchRecipeItems($this->outputs, $recipe->getResultsFor($this->source->getCraftingGrid()), false);
+				//assert that $repetitions x recipe ingredients should be consumed
+				$this->matchRecipeItems($this->inputs, $recipe->getIngredientList(), true, $this->repetitions);
+
+				//Success!
+				$this->recipe = $recipe;
+				break;
+			}catch(TransactionValidationException $e){
+				//failed
+				++$failed;
+			}
 		}
 
-		try{
-			$this->repetitions = $this->matchRecipeItems($this->outputs, $this->recipe->getResultsFor($this->source->getCraftingGrid()), false);
-
-			if(($inputIterations = $this->matchRecipeItems($this->inputs, $this->recipe->getIngredientList(), true, $this->repetitions)) !== $this->repetitions){
-				throw new TransactionValidationException("Tried to craft recipe $this->repetitions times in batch, but have enough inputs for $inputIterations");
-			}
-		}catch(\InvalidStateException $e){
-			throw new TransactionValidationException($e->getMessage());
+		if($this->recipe === null){
+			throw new TransactionValidationException("Unable to match a recipe to transaction (tried to match against $failed recipes)");
 		}
 	}
 
