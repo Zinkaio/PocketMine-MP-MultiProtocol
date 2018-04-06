@@ -439,6 +439,7 @@ class BlockFactory{
 	 * @return int
 	 */
 	public static function toStaticRuntimeId(int $id, int $meta = 0) : int{
+
 		$index = ($id << 4) | $meta;
 		if(!isset(self::$staticRuntimeIdMap[$index])){
 			self::registerMapping($rtId = ++self::$lastRuntimeId, $id, $meta);

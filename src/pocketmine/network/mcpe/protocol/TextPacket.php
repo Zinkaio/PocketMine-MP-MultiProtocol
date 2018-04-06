@@ -72,7 +72,7 @@ class TextPacket extends DataPacket{
 			/** @noinspection PhpMissingBreakStatementInspection */
 			case self::TYPE_ANNOUNCEMENT:
 				$this->sourceName = $this->getString();
-                if($protocol === 223){
+                if($protocol === 221){
                     $this->sourceThirdPartyName = $this->getString();
                     $this->sourcePlatform = $this->getVarInt();
                 }
@@ -94,7 +94,7 @@ class TextPacket extends DataPacket{
 		}
 
 		$this->xboxUserId = $this->getString();
-        if($protocol === 223){
+        if($protocol === 221){
             $this->platformChatId = $this->getString();
         }
 	}
@@ -108,7 +108,7 @@ class TextPacket extends DataPacket{
 			/** @noinspection PhpMissingBreakStatementInspection */
 			case self::TYPE_ANNOUNCEMENT:
 				$this->putString($this->sourceName);
-				if($this->player->protocol === 223){
+				if($this->player->protocol === 221){
                     $this->putString($this->sourceThirdPartyName);
                     $this->putVarInt($this->sourcePlatform);
                 }
@@ -130,7 +130,7 @@ class TextPacket extends DataPacket{
 		}
 
 		$this->putString($this->xboxUserId);
-		if($this->player->protocol === 223){
+		if($this->player->protocol === 221){
             $this->putString($this->platformChatId);
         }
 	}

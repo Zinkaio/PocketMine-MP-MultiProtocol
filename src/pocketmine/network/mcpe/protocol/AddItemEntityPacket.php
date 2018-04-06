@@ -58,7 +58,7 @@ class AddItemEntityPacket extends DataPacket{
 		$this->position = $this->getVector3();
 		$this->motion = $this->getVector3();
 		$this->metadata = $this->getEntityMetadata();
-		if($protocol === 223){
+		if($protocol === 221){
             $this->isFromFishing = $this->getBool();
         }
 	}
@@ -70,7 +70,7 @@ class AddItemEntityPacket extends DataPacket{
 		$this->putVector3($this->position);
 		$this->putVector3Nullable($this->motion);
 		$this->putEntityMetadata($this->metadata);
-        if($this->player->protocol === 223){
+        if($this->player->protocol === 221){
             $this->putBool($this->isFromFishing);
         }
 	}

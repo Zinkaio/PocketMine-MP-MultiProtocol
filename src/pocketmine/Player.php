@@ -322,6 +322,30 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/** @var int[] ID => ticks map */
 	protected $usedItemsCooldown = [];
 
+    public function convertProtocol(int $protocol): int{
+        switch ($protocol) {
+            /* BETA SERVER
+            case 240: // 1.2.14.2
+            case 250: // 1.2.15.1
+                return 240;
+            */
+            case 221: // 1.2.13.8
+            case 223: // 1.2.13.54
+                return 221;
+            case 134:// 1.2.0.20, 1.2.0.22
+            case 135: // 1.2.0.24, 1.2.0.25
+            case 136: // 1.2.0.31
+            case 137: // 1.2.0
+            case 140: // 1.2.5.11
+            case 141: // 1.2.5.11
+            case 150: // 1.2.6
+            case 160: // 1.2.7
+            case 201: // 1.2.10.x
+                return 120;
+        }
+        return -1;
+    }
+
 	/**
 	 * @return TranslationContainer|string
 	 */
@@ -1824,7 +1848,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return false;
 		}
 
-		$this->protocol = $packet->protocol;
+		$this->protocol = $this->convertProtocol($packet->protocol);
 
         if (!in_array($packet->protocol, ProtocolInfo::ACCEPTED_PROTOCOLS)) {
             if ($packet->protocol < ProtocolInfo::CURRENT_PROTOCOL) {
@@ -2960,7 +2984,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function handleBookEdit(BookEditPacket $packet) : bool{
 		/** @var WritableBook $oldBook */
-		if($this->protocol < 223){
+		if($this->protocol < 221){
             $oldBook = $this->inventory->getItem($packet->inventorySlot - 9);
         } else {
             $oldBook = $this->inventory->getItem($packet->inventorySlot);
@@ -3005,7 +3029,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return true;
 		}
 
-        if($this->protocol < 223){
+        if($this->protocol < 221){
             $this->getInventory()->setItem($packet->inventorySlot - 9, $event->getNewBook());
         } else {
             $this->getInventory()->setItem($packet->inventorySlot, $event->getNewBook());
