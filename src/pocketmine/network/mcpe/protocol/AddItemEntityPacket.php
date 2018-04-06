@@ -28,6 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\Player;
 
 class AddItemEntityPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::ADD_ITEM_ENTITY_PACKET;
@@ -47,14 +48,19 @@ class AddItemEntityPacket extends DataPacket{
 	/** @var bool */
 	public $isFromFishing = false;
 
-	protected function decodePayload(){
+    /** @var Player */
+    public $player;
+
+	protected function decodePayload(int $protocol){
 		$this->entityUniqueId = $this->getEntityUniqueId();
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->item = $this->getSlot();
 		$this->position = $this->getVector3();
 		$this->motion = $this->getVector3();
 		$this->metadata = $this->getEntityMetadata();
-		$this->isFromFishing = $this->getBool();
+		if($protocol === 223){
+            $this->isFromFishing = $this->getBool();
+        }
 	}
 
 	protected function encodePayload(){
@@ -64,7 +70,9 @@ class AddItemEntityPacket extends DataPacket{
 		$this->putVector3($this->position);
 		$this->putVector3Nullable($this->motion);
 		$this->putEntityMetadata($this->metadata);
-		$this->putBool($this->isFromFishing);
+        if($this->player->protocol === 223){
+            $this->putBool($this->isFromFishing);
+        }
 	}
 
 	public function handle(NetworkSession $session) : bool{

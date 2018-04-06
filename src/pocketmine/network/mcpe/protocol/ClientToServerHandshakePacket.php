@@ -35,7 +35,7 @@ class ClientToServerHandshakePacket extends DataPacket{
 		return true;
 	}
 
-	protected function decodePayload(){
+	protected function decodePayload(int $protocol){
 		//No payload
 	}
 

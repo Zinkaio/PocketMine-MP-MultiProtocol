@@ -35,7 +35,7 @@ class ModalFormRequestPacket extends DataPacket{
 	/** @var string */
 	public $formData; //json
 
-	protected function decodePayload(){
+	protected function decodePayload(int $protocol){
 		$this->formId = $this->getUnsignedVarInt();
 		$this->formData = $this->getString();
 	}

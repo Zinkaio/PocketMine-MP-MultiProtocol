@@ -41,7 +41,7 @@ class ResourcePackClientResponsePacket extends DataPacket{
 	/** @var string[] */
 	public $packIds = [];
 
-	protected function decodePayload(){
+	protected function decodePayload(int $protocol){
 		$this->status = $this->getByte();
 		$entryCount = $this->getLShort();
 		while($entryCount-- > 0){

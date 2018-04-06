@@ -33,7 +33,7 @@ class WSConnectPacket extends DataPacket{
 	/** @var string */
 	public $serverUri;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $protocol){
 		$this->serverUri = $this->getString();
 	}
 

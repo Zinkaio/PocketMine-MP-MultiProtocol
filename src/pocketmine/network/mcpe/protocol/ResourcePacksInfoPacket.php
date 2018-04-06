@@ -39,7 +39,7 @@ class ResourcePacksInfoPacket extends DataPacket{
 	/** @var ResourcePack[] */
 	public $resourcePackEntries = [];
 
-	protected function decodePayload(){
+	protected function decodePayload(int $protocol){
 		/*$this->mustAccept = $this->getBool();
 		$behaviorPackCount = $this->getLShort();
 		while($behaviorPackCount-- > 0){

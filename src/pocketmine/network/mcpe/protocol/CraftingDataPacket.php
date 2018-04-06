@@ -56,7 +56,7 @@ class CraftingDataPacket extends DataPacket{
 		return parent::clean();
 	}
 
-	protected function decodePayload(){
+	protected function decodePayload(int $protocol){
 		$this->decodedEntries = [];
 		$recipeCount = $this->getUnsignedVarInt();
 		for($i = 0; $i < $recipeCount; ++$i){

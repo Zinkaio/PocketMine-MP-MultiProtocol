@@ -35,7 +35,7 @@ class SetEntityLinkPacket extends DataPacket{
 	/** @var EntityLink */
 	public $link;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $protocol){
 		$this->link = $this->getEntityLink();
 	}
 

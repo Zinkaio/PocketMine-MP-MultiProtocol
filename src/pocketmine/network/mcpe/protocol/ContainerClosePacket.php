@@ -34,7 +34,7 @@ class ContainerClosePacket extends DataPacket{
 	/** @var int */
 	public $windowId;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $protocol){
 		$this->windowId = $this->getByte();
 	}
 

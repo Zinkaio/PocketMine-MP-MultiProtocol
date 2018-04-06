@@ -33,7 +33,7 @@ class SetTimePacket extends DataPacket{
 	/** @var int */
 	public $time;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $protocol){
 		$this->time = $this->getVarInt();
 	}
 

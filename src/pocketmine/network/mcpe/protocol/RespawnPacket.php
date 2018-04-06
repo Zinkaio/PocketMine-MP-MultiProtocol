@@ -35,7 +35,7 @@ class RespawnPacket extends DataPacket{
 	/** @var Vector3 */
 	public $position;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $protocol){
 		$this->position = $this->getVector3();
 	}
 

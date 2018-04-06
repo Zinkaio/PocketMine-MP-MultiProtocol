@@ -43,7 +43,7 @@ class CommandOutputPacket extends DataPacket{
 	/** @var string */
 	public $unknownString;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $protocol){
 		$this->originData = $this->getCommandOriginData();
 		$this->outputType = $this->getByte();
 		$this->successCount = $this->getUnsignedVarInt();

@@ -55,7 +55,7 @@ class AddEntityPacket extends DataPacket{
 	/** @var EntityLink[] */
 	public $links = [];
 
-	protected function decodePayload(){
+	protected function decodePayload(int $protocol){
 		$this->entityUniqueId = $this->getEntityUniqueId();
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->type = $this->getUnsignedVarInt();

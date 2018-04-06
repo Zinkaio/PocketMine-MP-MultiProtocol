@@ -33,7 +33,7 @@ class ShowProfilePacket extends DataPacket{
 	/** @var string */
 	public $xuid;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $protocol){
 		$this->xuid = $this->getString();
 	}
 

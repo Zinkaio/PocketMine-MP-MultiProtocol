@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\Player;
 
 class BookEditPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::BOOK_EDIT_PACKET;
@@ -57,7 +58,10 @@ class BookEditPacket extends DataPacket{
 	/** @var string */
 	public $xuid;
 
-	protected function decodePayload(){
+    /** @var Player */
+    public $player;
+
+	protected function decodePayload(int $protocol){
 		$this->type = $this->getByte();
 		$this->inventorySlot = $this->getByte();
 
@@ -78,7 +82,9 @@ class BookEditPacket extends DataPacket{
 			case self::TYPE_SIGN_BOOK:
 				$this->title = $this->getString();
 				$this->author = $this->getString();
-				$this->xuid = $this->getString();
+                if($protocol === 223){
+                    $this->xuid = $this->getString();
+                }
 				break;
 			default:
 				throw new \UnexpectedValueException("Unknown book edit type $this->type!");
@@ -106,7 +112,9 @@ class BookEditPacket extends DataPacket{
 			case self::TYPE_SIGN_BOOK:
 				$this->putString($this->title);
 				$this->putString($this->author);
-				$this->putString($this->xuid);
+                if($this->player->protocol === 223){
+                    $this->putString($this->xuid);
+                }
 				break;
 			default:
 				throw new \UnexpectedValueException("Unknown book edit type $this->type!");

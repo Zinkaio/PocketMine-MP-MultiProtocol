@@ -37,7 +37,7 @@ class UpdateAttributesPacket extends DataPacket{
 	/** @var Attribute[] */
 	public $entries = [];
 
-	protected function decodePayload(){
+	protected function decodePayload(int $protocol){
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->entries = $this->getAttributeList();
 	}

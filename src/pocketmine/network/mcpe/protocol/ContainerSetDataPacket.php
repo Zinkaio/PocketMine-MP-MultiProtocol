@@ -48,7 +48,7 @@ class ContainerSetDataPacket extends DataPacket{
 	/** @var int */
 	public $value;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $protocol){
 		$this->windowId = $this->getByte();
 		$this->property = $this->getVarInt();
 		$this->value = $this->getVarInt();

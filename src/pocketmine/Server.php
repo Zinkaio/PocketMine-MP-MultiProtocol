@@ -1834,10 +1834,18 @@ class Server{
 	 * @param Player[]   $players
 	 * @param DataPacket $packet
 	 */
-	public function broadcastPacket(array $players, DataPacket $packet){
-		$packet->encode();
-		$this->batchPackets($players, [$packet], false);
-	}
+    public function broadcastPacket(array $players, DataPacket $packet)
+    {
+        if (property_exists($packet, 'player')) {
+            foreach ($players as $player) {
+                $player->sendDataPacket($packet);
+            }
+        } else {
+            $packet->encode();
+            $this->batchPackets($players, [$packet], false);
+        }
+
+    }
 
 	/**
 	 * Broadcasts a list of packets in a batch to a list of players

@@ -36,7 +36,7 @@ class SimpleEventPacket extends DataPacket{
 	/** @var int */
 	public $eventType;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $protocol){
 		$this->eventType = $this->getLShort();
 	}
 

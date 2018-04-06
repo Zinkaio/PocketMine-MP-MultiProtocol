@@ -45,7 +45,7 @@ class PlaySoundPacket extends DataPacket{
 	/** @var float */
 	public $pitch;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $protocol){
 		$this->soundName = $this->getString();
 		$this->getBlockPosition($this->x, $this->y, $this->z);
 		$this->x /= 8;

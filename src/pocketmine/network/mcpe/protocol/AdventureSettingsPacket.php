@@ -76,7 +76,7 @@ class AdventureSettingsPacket extends DataPacket{
 	/** @var int */
 	public $entityUniqueId; //This is a little-endian long, NOT a var-long. (WTF Mojang)
 
-	protected function decodePayload(){
+	protected function decodePayload(int $protocol){
 		$this->flags = $this->getUnsignedVarInt();
 		$this->commandPermission = $this->getUnsignedVarInt();
 		$this->flags2 = $this->getUnsignedVarInt();

@@ -29,6 +29,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\mcpe\NetworkBinaryStream;
 use pocketmine\network\mcpe\NetworkSession;
 #ifndef COMPILE
+use pocketmine\Player;
 use pocketmine\utils\Binary;
 #endif
 
@@ -39,6 +40,8 @@ class BatchPacket extends DataPacket{
 	public $payload = "";
 	/** @var int */
 	protected $compressionLevel = 7;
+    /** @var Player */
+    public $player;
 
 	public function canBeBatched() : bool{
 		return false;
@@ -53,7 +56,7 @@ class BatchPacket extends DataPacket{
 		assert($pid === static::NETWORK_ID);
 	}
 
-	protected function decodePayload(){
+	protected function decodePayload(int $protocol){
 		$data = $this->getRemaining();
 		try{
 			$this->payload = zlib_decode($data, 1024 * 1024 * 64); //Max 64MB
@@ -108,7 +111,7 @@ class BatchPacket extends DataPacket{
 		}
 
 		foreach($this->getPackets() as $buf){
-			$pk = PacketPool::getPacket($buf);
+                $pk = PacketPool::getPacket($buf);
 
 			if(!$pk->canBeBatched()){
 				throw new \InvalidArgumentException("Received invalid " . get_class($pk) . " inside BatchPacket");

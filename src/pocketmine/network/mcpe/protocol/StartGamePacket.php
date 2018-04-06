@@ -118,8 +118,10 @@ class StartGamePacket extends DataPacket{
 	public $currentTick = 0;
 	/** @var int */
 	public $enchantmentSeed = 0;
+    /** @var Player */
+    public $player;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $protocol){
 		$this->entityUniqueId = $this->getEntityUniqueId();
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->playerGamemode = $this->getVarInt();
@@ -153,9 +155,13 @@ class StartGamePacket extends DataPacket{
 		$this->defaultPlayerPermission = $this->getVarInt();
 		$this->xboxLiveBroadcastMode = $this->getVarInt();
 		$this->serverChunkTickRadius = $this->getLInt();
-		$this->hasPlatformBroadcast = $this->getBool();
-		$this->platformBroadcastMode = $this->getUnsignedVarInt();
-		$this->xboxLiveBroadcastIntent = $this->getBool();
+        if($protocol === 223){ // 1.2.13
+            $this->hasPlatformBroadcast = $this->getBool();
+            $this->platformBroadcastMode = $this->getUnsignedVarInt();
+            $this->xboxLiveBroadcastIntent = $this->getBool();
+        } else { // 1.2.10
+            $this->serverChunkTickRadius = $this->getLInt();
+        }
 
 		$this->levelId = $this->getString();
 		$this->worldName = $this->getString();
@@ -200,9 +206,13 @@ class StartGamePacket extends DataPacket{
 		$this->putVarInt($this->defaultPlayerPermission);
 		$this->putVarInt($this->xboxLiveBroadcastMode);
 		$this->putLInt($this->serverChunkTickRadius);
-		$this->putBool($this->hasPlatformBroadcast);
-		$this->putUnsignedVarInt($this->platformBroadcastMode);
-		$this->putBool($this->xboxLiveBroadcastIntent);
+        if($this->player->protocol === 223){ // 1.2.13
+            $this->putBool($this->hasPlatformBroadcast);
+            $this->putUnsignedVarInt($this->platformBroadcastMode);
+            $this->putBool($this->xboxLiveBroadcastIntent);
+        } else { // 1.2.10
+            $this->putLInt($this->serverChunkTickRadius);
+        }
 
 		$this->putString($this->levelId);
 		$this->putString($this->worldName);

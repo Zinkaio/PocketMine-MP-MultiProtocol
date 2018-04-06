@@ -41,7 +41,7 @@ class ServerToClientHandshakePacket extends DataPacket{
 		return true;
 	}
 
-	protected function decodePayload(){
+	protected function decodePayload(int $protocol){
 		$this->jwt = $this->getString();
 	}
 

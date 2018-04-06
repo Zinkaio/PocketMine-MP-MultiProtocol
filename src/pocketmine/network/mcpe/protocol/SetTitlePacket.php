@@ -50,7 +50,7 @@ class SetTitlePacket extends DataPacket{
 	/** @var int */
 	public $fadeOutTime = 0;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $protocol){
 		$this->type = $this->getVarInt();
 		$this->text = $this->getString();
 		$this->fadeInTime = $this->getVarInt();

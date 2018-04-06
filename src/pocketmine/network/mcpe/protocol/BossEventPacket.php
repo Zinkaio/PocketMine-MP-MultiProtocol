@@ -66,7 +66,7 @@ class BossEventPacket extends DataPacket{
 	/** @var int */
 	public $overlay;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $protocol){
 		$this->bossEid = $this->getEntityUniqueId();
 		$this->eventType = $this->getUnsignedVarInt();
 		switch($this->eventType){

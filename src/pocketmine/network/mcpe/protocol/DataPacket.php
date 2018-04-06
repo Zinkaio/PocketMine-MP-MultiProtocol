@@ -65,10 +65,10 @@ abstract class DataPacket extends NetworkBinaryStream{
 		return false;
 	}
 
-	public function decode(){
+	public function decode(int $protocol){
 		$this->offset = 0;
 		$this->decodeHeader();
-		$this->decodePayload();
+		$this->decodePayload($protocol);
 	}
 
 	protected function decodeHeader(){
@@ -83,7 +83,7 @@ abstract class DataPacket extends NetworkBinaryStream{
 	/**
 	 * Note for plugin developers: If you're adding your own packets, you should perform decoding in here.
 	 */
-	protected function decodePayload(){
+	protected function decodePayload(int $protocol){
 
 	}
 

@@ -65,7 +65,7 @@ class ClientboundMapItemDataPacket extends DataPacket{
 	/** @var Color[][] */
 	public $colors = [];
 
-	protected function decodePayload(){
+	protected function decodePayload(int $protocol){
 		$this->mapId = $this->getEntityUniqueId();
 		$this->type = $this->getUnsignedVarInt();
 		$this->dimensionId = $this->getByte();

@@ -47,7 +47,7 @@ class MoveEntityPacket extends DataPacket{
 	/** @var bool */
 	public $teleported = false;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $protocol){
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->position = $this->getVector3();
 		$this->pitch = $this->getByteRotation();

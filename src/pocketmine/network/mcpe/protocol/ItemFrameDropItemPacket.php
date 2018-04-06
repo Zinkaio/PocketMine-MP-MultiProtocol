@@ -38,7 +38,7 @@ class ItemFrameDropItemPacket extends DataPacket{
 	/** @var int */
 	public $z;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $protocol){
 		$this->getBlockPosition($this->x, $this->y, $this->z);
 	}
 

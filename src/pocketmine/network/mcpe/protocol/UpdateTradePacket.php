@@ -54,7 +54,7 @@ class UpdateTradePacket extends DataPacket{
 	/** @var string */
 	public $offers;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $protocol){
 		$this->windowId = $this->getByte();
 		$this->windowType = $this->getByte();
 		$this->varint1 = $this->getVarInt();

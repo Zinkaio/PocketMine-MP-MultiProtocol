@@ -42,7 +42,7 @@ class BlockEventPacket extends DataPacket{
 	/** @var int */
 	public $eventData;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $protocol){
 		$this->getBlockPosition($this->x, $this->y, $this->z);
 		$this->eventType = $this->getVarInt();
 		$this->eventData = $this->getVarInt();

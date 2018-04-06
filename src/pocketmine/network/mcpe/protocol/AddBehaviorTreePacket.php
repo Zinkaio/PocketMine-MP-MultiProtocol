@@ -33,7 +33,7 @@ class AddBehaviorTreePacket extends DataPacket{
 	/** @var string */
 	public $behaviorTreeJson;
 
-	protected function decodePayload(){
+	protected function decodePayload(int $protocol){
 		$this->behaviorTreeJson = $this->getString();
 	}
 
