@@ -471,12 +471,7 @@ class Level implements ChunkManager, Metadatable{
 				$this->addChunkPacket($sound->getFloorX() >> 4, $sound->getFloorZ() >> 4, $e);
 			}
 		}else{
-            foreach ($players as $player){
-                foreach ($pk as $packet){
-                    $player->sendDataPacket($packet, false);
-                }
-            }
-			//$this->server->batchPackets($players, $pk, false);
+            $this->server->batchPackets($players, $pk, false);
 		}
 	}
 
@@ -491,12 +486,7 @@ class Level implements ChunkManager, Metadatable{
 				$this->addChunkPacket($particle->getFloorX() >> 4, $particle->getFloorZ() >> 4, $e);
 			}
 		}else{
-		    foreach ($players as $player){
-		        foreach ($pk as $packet){
-		            $player->sendDataPacket($packet, false);
-                }
-            }
-			//$this->server->batchPackets($players, $pk, false);
+			$this->server->batchPackets($players, $pk, false);
 		}
 	}
 
