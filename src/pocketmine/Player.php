@@ -322,10 +322,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/** @var int[] ID => ticks map */
 	protected $usedItemsCooldown = [];
 
-	static $protocols = array(120, 221);
-
-    public function getPlayerProtocol(): int{
-        switch ($this->protocol) {
+    public function convertProtocol(int $protocol): int{
+        switch ($protocol) {
             /* BETA SERVER
             case 240: // 1.2.14.2
             case 250: // 1.2.15.1
@@ -1850,7 +1848,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return false;
 		}
 
-		$this->protocol = $packet->protocol;
+		$this->protocol = $this->convertProtocol($packet->protocol);
 
         if (!in_array($packet->protocol, ProtocolInfo::ACCEPTED_PROTOCOLS)) {
             if ($packet->protocol < ProtocolInfo::CURRENT_PROTOCOL) {
@@ -2986,7 +2984,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function handleBookEdit(BookEditPacket $packet) : bool{
 		/** @var WritableBook $oldBook */
-		if($this->getPlayerProtocol() < 221){
+		if($this->protocol < 221){
             $oldBook = $this->inventory->getItem($packet->inventorySlot - 9);
         } else {
             $oldBook = $this->inventory->getItem($packet->inventorySlot);
@@ -3031,7 +3029,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return true;
 		}
 
-        if($this->getPlayerProtocol() < 221){
+        if($this->protocol < 221){
             $this->getInventory()->setItem($packet->inventorySlot - 9, $event->getNewBook());
         } else {
             $this->getInventory()->setItem($packet->inventorySlot, $event->getNewBook());
@@ -3084,8 +3082,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @return bool|int
 	 */
 	public function sendDataPacket(DataPacket $packet, bool $needACK = false, bool $immediate = false){
-	    if(property_exists($packet, 'protocol')){
-            $packet->protocol = $this->getPlayerProtocol();
+	    if(property_exists($packet, 'player')){
+            $packet->player = $this;
         }
 
 		if(!$this->isConnected()){

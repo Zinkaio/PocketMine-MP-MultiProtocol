@@ -65,8 +65,8 @@ class AddPlayerPacket extends DataPacket{
 	/** @var array */
 	public $metadata = [];
 
-    /** @var int */
-    public $protocol;
+    /** @var Player */
+    public $player;
 
 	//TODO: adventure settings stuff
 	public $uvarint1 = 0;
@@ -83,13 +83,13 @@ class AddPlayerPacket extends DataPacket{
 	protected function decodePayload(int $protocol){
 		$this->uuid = $this->getUUID();
 		$this->username = $this->getString();
-        if($protocol >= 221){
+        if($protocol === 221){
             $this->thirdPartyName = $this->getString();
             $this->platform = $this->getVarInt();
         }
 		$this->entityUniqueId = $this->getEntityUniqueId();
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
-        if($protocol >= 221){
+        if($protocol === 221){
             $this->platformChatId = $this->getString();
         }
 		$this->position = $this->getVector3();
@@ -117,13 +117,13 @@ class AddPlayerPacket extends DataPacket{
 	protected function encodePayload(){
 		$this->putUUID($this->uuid);
 		$this->putString($this->username);
-        if($this->protocol >= 221){
+        if($this->player->protocol === 221){
             $this->putString($this->thirdPartyName);
             $this->putVarInt($this->platform);
         }
 		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
 		$this->putEntityRuntimeId($this->entityRuntimeId);
-        if($this->protocol >= 221){
+        if($this->player->protocol === 221){
             $this->putString($this->platformChatId);
         }
 		$this->putVector3($this->position);

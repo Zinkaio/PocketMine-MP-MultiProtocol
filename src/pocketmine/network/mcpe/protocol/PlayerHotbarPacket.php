@@ -47,8 +47,8 @@ class PlayerHotbarPacket extends DataPacket{
 	public $slots = [];
 	/** @var bool */
 	public $selectHotbarSlot = true;
-    /** @var int */
-    public $protocol;
+    /** @var Player */
+    public $player;
 
 	protected function decodePayload(int $protocol){
 		$this->selectedHotbarSlot = $this->getUnsignedVarInt();
@@ -65,7 +65,7 @@ class PlayerHotbarPacket extends DataPacket{
 	protected function encodePayload(){
 		$this->putUnsignedVarInt($this->selectedHotbarSlot);
 		$this->putByte($this->windowId);
-        if($this->protocol <= 120){
+        if($this->player->protocol <= 120){
             $this->putUnsignedVarInt(count($this->slots));
             foreach ($this->slots as $slot) {
                 $this->putUnsignedVarInt($slot);
