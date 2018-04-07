@@ -332,6 +332,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
             case 221: // 1.2.13.8
             case 223: // 1.2.13.54
                 return 221;
+            case 201: // 1.2.10.x
+                return 201;
             case 134:// 1.2.0.20, 1.2.0.22
             case 135: // 1.2.0.24, 1.2.0.25
             case 136: // 1.2.0.31
@@ -340,7 +342,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
             case 141: // 1.2.5.11
             case 150: // 1.2.6
             case 160: // 1.2.7
-            case 201: // 1.2.10.x
                 return 120;
         }
         return -1;
