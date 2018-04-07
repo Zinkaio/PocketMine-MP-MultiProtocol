@@ -65,7 +65,7 @@ class UpdateBlockPacket extends DataPacket{
             $this->blockId = $this->getUnsignedVarInt();
             $aux = $this->getUnsignedVarInt();
             $this->blockData = $aux & 0x0f;
-        } elseif ($protocol === 221){
+        } elseif ($protocol === 223){
             $this->blockRuntimeId = $this->getUnsignedVarInt();
         }
 		$this->flags = $this->getUnsignedVarInt();
@@ -76,7 +76,7 @@ class UpdateBlockPacket extends DataPacket{
         if($this->player->protocol <= 201){
             $this->putUnsignedVarInt($this->blockId);
             $this->putUnsignedVarInt(($this->flags << 4) | $this->blockData);
-        } elseif ($this->player->protocol === 221){
+        } elseif ($this->player->protocol === 223){
             $this->putUnsignedVarInt($this->blockRuntimeId);
         }
 
