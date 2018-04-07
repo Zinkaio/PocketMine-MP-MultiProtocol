@@ -159,7 +159,7 @@ class StartGamePacket extends DataPacket{
             $this->hasPlatformBroadcast = $this->getBool();
             $this->platformBroadcastMode = $this->getUnsignedVarInt();
             $this->xboxLiveBroadcastIntent = $this->getBool();
-        } elseif($protocol === 201) { // 1.2.10
+        } else { // 1.2.10
             $this->serverChunkTickRadius = $this->getLInt();
         }
 
@@ -210,7 +210,7 @@ class StartGamePacket extends DataPacket{
             $this->putBool($this->hasPlatformBroadcast);
             $this->putUnsignedVarInt($this->platformBroadcastMode);
             $this->putBool($this->xboxLiveBroadcastIntent);
-        } elseif($this->protocol === 201) { // 1.2.10
+        } else { // 1.2.10
             $this->putLInt($this->serverChunkTickRadius);
         }
 
