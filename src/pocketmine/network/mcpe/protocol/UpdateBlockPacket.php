@@ -56,8 +56,8 @@ class UpdateBlockPacket extends DataPacket{
 	/** @var int */
 	public $flags;
 
-    /** @var Player */
-    public $player;
+    /** @var int */
+    public $protocol;
 
 	protected function decodePayload(int $protocol){
 		$this->getBlockPosition($this->x, $this->y, $this->z);
@@ -65,7 +65,7 @@ class UpdateBlockPacket extends DataPacket{
             $this->blockId = $this->getUnsignedVarInt();
             $aux = $this->getUnsignedVarInt();
             $this->blockData = $aux & 0x0f;
-        } elseif ($protocol === 221){
+        } elseif ($protocol >= 221){
             $this->blockRuntimeId = $this->getUnsignedVarInt();
         }
 		$this->flags = $this->getUnsignedVarInt();
@@ -73,10 +73,10 @@ class UpdateBlockPacket extends DataPacket{
 
 	protected function encodePayload(){
 		$this->putBlockPosition($this->x, $this->y, $this->z);
-        if($this->player->protocol <= 201){
+        if($this->protocol <= 201){
             $this->putUnsignedVarInt($this->blockId);
             $this->putUnsignedVarInt(($this->flags << 4) | $this->blockData);
-        } elseif ($this->player->protocol === 221){
+        } else {
             $this->putUnsignedVarInt($this->blockRuntimeId);
         }
 

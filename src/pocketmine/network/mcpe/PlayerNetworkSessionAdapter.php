@@ -82,7 +82,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		$timings = Timings::getReceiveDataPacketTimings($packet);
 		$timings->startTiming();
 
-		$packet->decode($this->player->protocol);
+		$packet->decode($this->player->getPlayerProtocol());
 		if(!$packet->feof() and !$packet->mayHaveUnreadBytes()){
 			$remains = substr($packet->buffer, $packet->offset);
 			$this->server->getLogger()->debug("Still " . strlen($remains) . " bytes unread in " . $packet->getName() . ": 0x" . bin2hex($remains));

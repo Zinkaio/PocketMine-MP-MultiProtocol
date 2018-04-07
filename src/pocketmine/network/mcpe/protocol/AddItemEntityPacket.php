@@ -48,8 +48,8 @@ class AddItemEntityPacket extends DataPacket{
 	/** @var bool */
 	public $isFromFishing = false;
 
-    /** @var Player */
-    public $player;
+    /** @var int */
+    public $protocol;
 
 	protected function decodePayload(int $protocol){
 		$this->entityUniqueId = $this->getEntityUniqueId();
@@ -58,7 +58,7 @@ class AddItemEntityPacket extends DataPacket{
 		$this->position = $this->getVector3();
 		$this->motion = $this->getVector3();
 		$this->metadata = $this->getEntityMetadata();
-		if($protocol === 221){
+		if($protocol >= 221){
             $this->isFromFishing = $this->getBool();
         }
 	}
@@ -70,7 +70,7 @@ class AddItemEntityPacket extends DataPacket{
 		$this->putVector3($this->position);
 		$this->putVector3Nullable($this->motion);
 		$this->putEntityMetadata($this->metadata);
-        if($this->player->protocol === 221){
+        if($this->protocol >= 221){
             $this->putBool($this->isFromFishing);
         }
 	}

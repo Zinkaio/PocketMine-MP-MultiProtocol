@@ -1835,14 +1835,8 @@ class Server{
 	 * @param DataPacket $packet
 	 */
 	public function broadcastPacket(array $players, DataPacket $packet){
-            if(property_exists($packet, 'player')){
-                foreach ($players as $player){
-                    $player->sendDataPacket($packet);
-                }
-            } else {
-                $packet->encode();
-                $this->batchPackets($players, [$packet], false);
-            }
+	    $packet->encode();
+	    $this->batchPackets($players, [$packet], false);
 	}
 
 	/**
@@ -1862,25 +1856,70 @@ class Server{
 		$targets = array_filter($players, function(Player $player) : bool{ return $player->isConnected(); });
 
 		if(!empty($targets)){
-			$pk = new BatchPacket();
+            $sendPerProtocol = false;
 
-			foreach($packets as $p){
-				$pk->addPacket($p);
-			}
+            foreach($packets as $packet){
+                if(property_exists($packet, 'protocol')){
+                    $sendPerProtocol = true;
+                }
+            }
 
-			if(Network::$BATCH_THRESHOLD >= 0 and strlen($pk->payload) >= Network::$BATCH_THRESHOLD){
-				$pk->setCompressionLevel($this->networkCompressionLevel);
-			}else{
-				$pk->setCompressionLevel(0); //Do not compress packets under the threshold
-				$forceSync = true;
-			}
+            if($sendPerProtocol === true){
+                $targetProtocols = [];
 
-			if(!$forceSync and !$immediate and $this->networkCompressionAsync){
-				$task = new CompressBatchedTask($pk, $targets);
-				$this->getScheduler()->scheduleAsyncTask($task);
-			}else{
-				$this->broadcastPacketsCallback($pk, $targets, $immediate);
-			}
+                foreach ($targets as $target){
+                    $targetProtocols[$target->getPlayerProtocol()][] = $target;
+                }
+
+                foreach ($targetProtocols as $targetProtocol){
+                    if(!empty($targetProtocol)){
+                        $targets = $targetProtocol;
+                        $pk = new BatchPacket();
+
+                        foreach($packets as $packet){
+                            if(property_exists($packet, 'protocol')){
+                                $packet->protocol = $targetProtocol;
+                            }
+
+                            $pk->addPacket($packet);
+                        }
+
+                        if(Network::$BATCH_THRESHOLD >= 0 and strlen($pk->payload) >= Network::$BATCH_THRESHOLD){
+                            $pk->setCompressionLevel($this->networkCompressionLevel);
+                        }else{
+                            $pk->setCompressionLevel(0); //Do not compress packets under the threshold
+                            $forceSync = true;
+                        }
+
+                        if(!$forceSync and !$immediate and $this->networkCompressionAsync){
+                            $task = new CompressBatchedTask($pk, $targets);
+                            $this->getScheduler()->scheduleAsyncTask($task);
+                        }else{
+                            $this->broadcastPacketsCallback($pk, $targets, $immediate);
+                        }
+                    }
+                }
+            } else {
+                $pk = new BatchPacket();
+
+                foreach($packets as $packet){
+                    $pk->addPacket($packet);
+                }
+
+                if(Network::$BATCH_THRESHOLD >= 0 and strlen($pk->payload) >= Network::$BATCH_THRESHOLD){
+                    $pk->setCompressionLevel($this->networkCompressionLevel);
+                }else{
+                    $pk->setCompressionLevel(0); //Do not compress packets under the threshold
+                    $forceSync = true;
+                }
+
+                if(!$forceSync and !$immediate and $this->networkCompressionAsync){
+                    $task = new CompressBatchedTask($pk, $targets);
+                    $this->getScheduler()->scheduleAsyncTask($task);
+                }else{
+                    $this->broadcastPacketsCallback($pk, $targets, $immediate);
+                }
+            }
 		}
 
 		Timings::$playerNetworkTimer->stopTiming();

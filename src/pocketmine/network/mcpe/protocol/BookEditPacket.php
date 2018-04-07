@@ -58,8 +58,8 @@ class BookEditPacket extends DataPacket{
 	/** @var string */
 	public $xuid;
 
-    /** @var Player */
-    public $player;
+    /** @var int */
+    public $protocol;
 
 	protected function decodePayload(int $protocol){
 		$this->type = $this->getByte();
@@ -82,7 +82,7 @@ class BookEditPacket extends DataPacket{
 			case self::TYPE_SIGN_BOOK:
 				$this->title = $this->getString();
 				$this->author = $this->getString();
-                if($protocol === 221){
+                if($protocol >= 221){
                     $this->xuid = $this->getString();
                 }
 				break;
@@ -112,7 +112,7 @@ class BookEditPacket extends DataPacket{
 			case self::TYPE_SIGN_BOOK:
 				$this->putString($this->title);
 				$this->putString($this->author);
-                if($this->player->protocol === 221){
+                if($this->protocol >= 221){
                     $this->putString($this->xuid);
                 }
 				break;

@@ -42,8 +42,8 @@ class PlayerListPacket extends DataPacket{
 	/** @var int */
     public $type;
 
-    /** @var Player */
-    public $player;
+    /** @var int */
+    public $protocol;
 
 	public function clean(){
 		$this->entries = [];
@@ -60,7 +60,7 @@ class PlayerListPacket extends DataPacket{
 				$entry->uuid = $this->getUUID();
 				$entry->entityUniqueId = $this->getEntityUniqueId();
 				$entry->username = $this->getString();
-                if($protocol === 221){
+                if($protocol >= 221){
                     $entry->thirdPartyName = $this->getString();
                     $entry->platform = $this->getVarInt();
                 }
@@ -79,7 +79,7 @@ class PlayerListPacket extends DataPacket{
 					$geometryData
 				);
 				$entry->xboxUserId = $this->getString();
-                if($protocol === 221){
+                if($protocol >= 221){
                     $this->getString(); //unknown
                 }
 			}else{
@@ -98,7 +98,7 @@ class PlayerListPacket extends DataPacket{
 				$this->putUUID($entry->uuid);
 				$this->putEntityUniqueId($entry->entityUniqueId);
 				$this->putString($entry->username);
-                if($this->player->protocol === 221){
+                if($this->protocol >= 221){
                     $this->putString($entry->thirdPartyName);
                     $this->putVarInt($entry->platform);
                 }
@@ -108,7 +108,7 @@ class PlayerListPacket extends DataPacket{
 				$this->putString($entry->skin->getGeometryName());
 				$this->putString($entry->skin->getGeometryData());
 				$this->putString($entry->xboxUserId);
-                if($this->player->protocol === 221){
+                if($this->protocol >= 221){
                     $this->putString("");
                 }
 			}else{
