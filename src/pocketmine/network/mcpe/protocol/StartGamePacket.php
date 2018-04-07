@@ -154,12 +154,12 @@ class StartGamePacket extends DataPacket{
 		$this->hasTrustPlayersEnabled = $this->getBool();
 		$this->defaultPlayerPermission = $this->getVarInt();
 		$this->xboxLiveBroadcastMode = $this->getVarInt();
+		$this->serverChunkTickRadius = $this->getLInt();
         if($protocol === 221){ // 1.2.13
-            $this->serverChunkTickRadius = $this->getLInt();
             $this->hasPlatformBroadcast = $this->getBool();
             $this->platformBroadcastMode = $this->getUnsignedVarInt();
             $this->xboxLiveBroadcastIntent = $this->getBool();
-        } elseif($protocol === 201) { // 1.2.10
+        } else { // 1.2.10
             $this->serverChunkTickRadius = $this->getLInt();
         }
 
@@ -205,12 +205,12 @@ class StartGamePacket extends DataPacket{
 		$this->putBool($this->hasTrustPlayersEnabled);
 		$this->putVarInt($this->defaultPlayerPermission);
 		$this->putVarInt($this->xboxLiveBroadcastMode);
+		$this->putLInt($this->serverChunkTickRadius);
         if($this->player->protocol === 221){ // 1.2.13
-            $this->putLInt($this->serverChunkTickRadius);
             $this->putBool($this->hasPlatformBroadcast);
             $this->putUnsignedVarInt($this->platformBroadcastMode);
             $this->putBool($this->xboxLiveBroadcastIntent);
-        } elseif($this->player->protocol === 201) { // 1.2.10
+        } else { // 1.2.10
             $this->putLInt($this->serverChunkTickRadius);
         }
 
