@@ -37,7 +37,7 @@ class PhotoTransferPacket extends DataPacket{
 	/** @var string */
 	public $bookId; //photos are stored in a sibling directory to the games folder (screenshots/(some UUID)/bookID/example.png)
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->photoName = $this->getString();
 		$this->photoData = $this->getString();
 		$this->bookId = $this->getString();

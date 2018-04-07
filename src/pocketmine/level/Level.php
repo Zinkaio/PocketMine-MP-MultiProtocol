@@ -87,10 +87,6 @@ use pocketmine\utils\ReversePriorityQueue;
 
 #include <rules/Level.h>
 
-/**
- * Class Level
- * @package pocketmine\level
- */
 class Level implements ChunkManager, Metadatable{
 
 	private static $levelIdCounter = 1;
@@ -471,7 +467,7 @@ class Level implements ChunkManager, Metadatable{
 				$this->addChunkPacket($sound->getFloorX() >> 4, $sound->getFloorZ() >> 4, $e);
 			}
 		}else{
-            $this->server->batchPackets($players, $pk, false);
+			$this->server->batchPackets($players, $pk, false);
 		}
 	}
 
@@ -905,10 +901,6 @@ class Level implements ChunkManager, Metadatable{
 					$blockData = $fullBlock & 0xf;
 				}
 
-                // 1.2.10 DATA
-                $pk->blockId = $blockId;
-                $pk->blockData = $blockData;
-                // 1.2.13 DATA
 				$pk->blockRuntimeId = BlockFactory::toStaticRuntimeId($blockId, $blockData);
 
 				$pk->flags = $first ? $flags : UpdateBlockPacket::FLAG_NONE;
@@ -934,10 +926,7 @@ class Level implements ChunkManager, Metadatable{
 					$blockId = $fullBlock >> 4;
 					$blockData = $fullBlock & 0xf;
 				}
-                // 1.2.10 DATA
-                $pk->blockId = $blockId;
-                $pk->blockData = $blockData;
-                // 1.2.13 DATA
+
 				$pk->blockRuntimeId = BlockFactory::toStaticRuntimeId($blockId, $blockData);
 
 				$pk->flags = $flags;
@@ -946,13 +935,7 @@ class Level implements ChunkManager, Metadatable{
 			}
 		}
 
-		foreach ($target as $player){
-		    foreach ($packets as $packet){
-		        $player->dataPacket($packet);
-            }
-        }
-
-		//$this->server->batchPackets($target, $packets, false, false);
+		$this->server->batchPackets($target, $packets, false, false);
 	}
 
 	public function clearCache(bool $force = false){

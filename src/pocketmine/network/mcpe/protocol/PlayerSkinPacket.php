@@ -42,7 +42,7 @@ class PlayerSkinPacket extends DataPacket{
 	public $skin;
 
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->uuid = $this->getUUID();
 
 		$skinId = $this->getString();

@@ -36,7 +36,7 @@ class TakeItemEntityPacket extends DataPacket{
 	/** @var int */
 	public $eid;
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 
 	}
 

@@ -27,7 +27,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\network\mcpe\NetworkSession;
-use pocketmine\Player;
 
 class TextPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::TEXT_PACKET;
@@ -56,14 +55,12 @@ class TextPacket extends DataPacket{
 	public $message;
 	/** @var string[] */
 	public $parameters = [];
-    /** @var Player */
-    public $player;
 	/** @var string */
 	public $xboxUserId = "";
 	/** @var string */
 	public $platformChatId = "";
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->type = $this->getByte();
 		$this->needsTranslation = $this->getBool();
 		switch($this->type){
@@ -72,10 +69,8 @@ class TextPacket extends DataPacket{
 			/** @noinspection PhpMissingBreakStatementInspection */
 			case self::TYPE_ANNOUNCEMENT:
 				$this->sourceName = $this->getString();
-                if($protocol === 223){
-                    $this->sourceThirdPartyName = $this->getString();
-                    $this->sourcePlatform = $this->getVarInt();
-                }
+				$this->sourceThirdPartyName = $this->getString();
+				$this->sourcePlatform = $this->getVarInt();
 			case self::TYPE_RAW:
 			case self::TYPE_TIP:
 			case self::TYPE_SYSTEM:
@@ -94,9 +89,7 @@ class TextPacket extends DataPacket{
 		}
 
 		$this->xboxUserId = $this->getString();
-        if($protocol === 223){
-            $this->platformChatId = $this->getString();
-        }
+		$this->platformChatId = $this->getString();
 	}
 
 	protected function encodePayload(){
@@ -108,10 +101,8 @@ class TextPacket extends DataPacket{
 			/** @noinspection PhpMissingBreakStatementInspection */
 			case self::TYPE_ANNOUNCEMENT:
 				$this->putString($this->sourceName);
-				if($this->player->protocol === 223){
-                    $this->putString($this->sourceThirdPartyName);
-                    $this->putVarInt($this->sourcePlatform);
-                }
+				$this->putString($this->sourceThirdPartyName);
+				$this->putVarInt($this->sourcePlatform);
 			case self::TYPE_RAW:
 			case self::TYPE_TIP:
 			case self::TYPE_SYSTEM:
@@ -130,9 +121,7 @@ class TextPacket extends DataPacket{
 		}
 
 		$this->putString($this->xboxUserId);
-		if($this->player->protocol === 223){
-            $this->putString($this->platformChatId);
-        }
+		$this->putString($this->platformChatId);
 	}
 
 	public function handle(NetworkSession $session) : bool{

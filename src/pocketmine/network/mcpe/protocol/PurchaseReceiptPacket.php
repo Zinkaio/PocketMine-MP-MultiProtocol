@@ -33,7 +33,7 @@ class PurchaseReceiptPacket extends DataPacket{
 	/** @var string[] */
 	public $entries = [];
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$count = $this->getUnsignedVarInt();
 		for($i = 0; $i < $count; ++$i){
 			$this->entries[] = $this->getString();

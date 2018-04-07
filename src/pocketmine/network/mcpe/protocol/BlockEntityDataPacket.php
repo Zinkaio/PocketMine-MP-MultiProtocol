@@ -40,7 +40,7 @@ class BlockEntityDataPacket extends DataPacket{
 	/** @var string */
 	public $namedtag;
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->getBlockPosition($this->x, $this->y, $this->z);
 		$this->namedtag = $this->getRemaining();
 	}

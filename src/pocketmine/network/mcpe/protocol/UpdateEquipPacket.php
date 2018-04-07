@@ -41,7 +41,7 @@ class UpdateEquipPacket extends DataPacket{
 	/** @var string */
 	public $namedtag;
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->windowId = $this->getByte();
 		$this->windowType = $this->getByte();
 		$this->unknownVarint = $this->getVarInt();

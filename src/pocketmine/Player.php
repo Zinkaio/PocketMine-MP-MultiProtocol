@@ -1826,7 +1826,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->protocol = $packet->protocol;
 
-        if (!in_array($packet->protocol, ProtocolInfo::ACCEPTED_PROTOCOLS)) {
+        if($packet->protocol !== ProtocolInfo::CURRENT_PROTOCOL){
             if ($packet->protocol < ProtocolInfo::CURRENT_PROTOCOL) {
 				$this->sendPlayStatus(PlayStatusPacket::LOGIN_FAILED_CLIENT, true);
 			}else{
@@ -2097,6 +2097,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk->rainLevel = 0; //TODO: implement these properly
 		$pk->lightningLevel = 0;
 		$pk->commandsEnabled = true;
+		$pk->player = $this;
 		$pk->levelId = "";
 		$pk->worldName = $this->server->getMotd();
 		$this->dataPacket($pk);
@@ -2960,11 +2961,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function handleBookEdit(BookEditPacket $packet) : bool{
 		/** @var WritableBook $oldBook */
-		if($this->protocol < 223){
-            $oldBook = $this->inventory->getItem($packet->inventorySlot - 9);
-        } else {
-            $oldBook = $this->inventory->getItem($packet->inventorySlot);
-        }
+		$oldBook = $this->inventory->getItem($packet->inventorySlot);
 		if($oldBook->getId() !== Item::WRITABLE_BOOK){
 			return false;
 		}
@@ -3005,11 +3002,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return true;
 		}
 
-        if($this->protocol < 223){
-            $this->getInventory()->setItem($packet->inventorySlot - 9, $event->getNewBook());
-        } else {
-            $this->getInventory()->setItem($packet->inventorySlot, $event->getNewBook());
-        }
+		$this->getInventory()->setItem($packet->inventorySlot, $event->getNewBook());
 
 		return true;
 	}
@@ -3058,10 +3051,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @return bool|int
 	 */
 	public function sendDataPacket(DataPacket $packet, bool $needACK = false, bool $immediate = false){
-	    if(property_exists($packet, 'player')){
-            $packet->player = $this;
-        }
-
 		if(!$this->isConnected()){
 			return false;
 		}

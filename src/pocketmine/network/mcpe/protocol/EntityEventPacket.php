@@ -90,7 +90,7 @@ class EntityEventPacket extends DataPacket{
 	/** @var int */
 	public $data = 0;
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->event = $this->getByte();
 		$this->data = $this->getVarInt();

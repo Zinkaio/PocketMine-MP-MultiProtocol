@@ -58,7 +58,7 @@ class MovePlayerPacket extends DataPacket{
 	/** @var int */
 	public $teleportItem = 0;
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->position = $this->getVector3();
 		$this->pitch = $this->getLFloat();

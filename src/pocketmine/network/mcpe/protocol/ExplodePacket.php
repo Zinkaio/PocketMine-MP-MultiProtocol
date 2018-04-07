@@ -44,7 +44,7 @@ class ExplodePacket extends DataPacket{
 		return parent::clean();
 	}
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->position = $this->getVector3();
 		$this->radius = (float) ($this->getVarInt() / 32);
 		$count = $this->getUnsignedVarInt();

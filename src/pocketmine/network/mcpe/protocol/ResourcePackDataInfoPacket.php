@@ -43,7 +43,7 @@ class ResourcePackDataInfoPacket extends DataPacket{
 	/** @var string */
 	public $sha256;
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->packId = $this->getString();
 		$this->maxChunkSize = $this->getLInt();
 		$this->chunkCount = $this->getLInt();

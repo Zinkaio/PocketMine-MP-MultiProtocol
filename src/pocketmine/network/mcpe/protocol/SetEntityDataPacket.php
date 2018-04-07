@@ -36,7 +36,7 @@ class SetEntityDataPacket extends DataPacket{
 	/** @var array */
 	public $metadata;
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->metadata = $this->getEntityMetadata();
 	}

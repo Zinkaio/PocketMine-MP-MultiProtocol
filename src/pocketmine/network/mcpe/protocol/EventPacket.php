@@ -48,7 +48,7 @@ class EventPacket extends DataPacket{
 	/** @var int */
 	public $type;
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->playerRuntimeId = $this->getEntityRuntimeId();
 		$this->eventData = $this->getVarInt();
 		$this->type = $this->getByte();

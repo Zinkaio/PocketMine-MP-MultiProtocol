@@ -223,7 +223,7 @@ class LevelSoundEventPacket extends DataPacket{
 	/** @var bool */
 	public $disableRelativeVolume = false;
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->sound = $this->getByte();
 		$this->position = $this->getVector3();
 		$this->extraData = $this->getVarInt();

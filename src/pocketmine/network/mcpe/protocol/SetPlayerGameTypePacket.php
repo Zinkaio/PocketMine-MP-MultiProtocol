@@ -34,7 +34,7 @@ class SetPlayerGameTypePacket extends DataPacket{
 	/** @var int */
 	public $gamemode;
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->gamemode = $this->getVarInt();
 	}
 

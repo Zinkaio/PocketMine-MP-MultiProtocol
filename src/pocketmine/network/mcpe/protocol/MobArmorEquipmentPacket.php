@@ -37,7 +37,7 @@ class MobArmorEquipmentPacket extends DataPacket{
 	/** @var Item[] */
 	public $slots = [];
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		for($i = 0; $i < 4; ++$i){
 			$this->slots[$i] = $this->getSlot();

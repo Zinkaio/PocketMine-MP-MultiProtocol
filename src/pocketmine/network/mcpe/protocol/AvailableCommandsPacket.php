@@ -101,7 +101,7 @@ class AvailableCommandsPacket extends DataPacket{
 	 */
 	public $commandData = [];
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		for($i = 0, $this->enumValuesCount = $this->getUnsignedVarInt(); $i < $this->enumValuesCount; ++$i){
 			$this->enumValues[] = $this->getString();
 		}

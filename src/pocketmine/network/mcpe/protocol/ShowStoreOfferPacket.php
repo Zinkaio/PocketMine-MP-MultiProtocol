@@ -35,7 +35,7 @@ class ShowStoreOfferPacket extends DataPacket{
 	/** @var bool */
 	public $unknownBool;
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->offerId = $this->getString();
 		$this->unknownBool = $this->getBool();
 	}

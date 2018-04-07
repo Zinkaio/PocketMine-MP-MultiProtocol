@@ -46,7 +46,7 @@ class AddPaintingPacket extends DataPacket{
 	/** @var string */
 	public $title;
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->entityUniqueId = $this->getEntityUniqueId();
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->getBlockPosition($this->x, $this->y, $this->z);

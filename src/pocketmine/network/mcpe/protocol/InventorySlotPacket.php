@@ -38,7 +38,7 @@ class InventorySlotPacket extends DataPacket{
 	/** @var Item */
 	public $item;
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->windowId = $this->getUnsignedVarInt();
 		$this->inventorySlot = $this->getUnsignedVarInt();
 		$this->item = $this->getSlot();

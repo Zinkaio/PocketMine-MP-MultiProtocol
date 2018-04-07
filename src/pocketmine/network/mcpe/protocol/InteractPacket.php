@@ -48,7 +48,7 @@ class InteractPacket extends DataPacket{
 	/** @var float */
 	public $z;
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->action = $this->getByte();
 		$this->target = $this->getEntityRuntimeId();
 

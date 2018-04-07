@@ -27,7 +27,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 
 use pocketmine\network\mcpe\NetworkSession;
-use pocketmine\Player;
 
 class UpdateBlockPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::UPDATE_BLOCK_PACKET;
@@ -47,39 +46,20 @@ class UpdateBlockPacket extends DataPacket{
 	public $z;
 	/** @var int */
 	public $y;
-    /** @var int */
-	public $blockId;
-	/** @var int */
-	public $blockData;
 	/** @var int */
 	public $blockRuntimeId;
 	/** @var int */
 	public $flags;
 
-    /** @var Player */
-    public $player;
-
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->getBlockPosition($this->x, $this->y, $this->z);
-		if($protocol <= 201){
-            $this->blockId = $this->getUnsignedVarInt();
-            $aux = $this->getUnsignedVarInt();
-            $this->blockData = $aux & 0x0f;
-        } elseif ($protocol === 223){
-            $this->blockRuntimeId = $this->getUnsignedVarInt();
-        }
+		$this->blockRuntimeId = $this->getUnsignedVarInt();
 		$this->flags = $this->getUnsignedVarInt();
 	}
 
 	protected function encodePayload(){
 		$this->putBlockPosition($this->x, $this->y, $this->z);
-        if($this->player->protocol <= 201){
-            $this->putUnsignedVarInt($this->blockId);
-            $this->putUnsignedVarInt(($this->flags << 4) | $this->blockData);
-        } elseif ($this->player->protocol === 223){
-            $this->putUnsignedVarInt($this->blockRuntimeId);
-        }
-
+		$this->putUnsignedVarInt($this->blockRuntimeId);
 		$this->putUnsignedVarInt($this->flags);
 	}
 

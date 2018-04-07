@@ -34,7 +34,7 @@ class SetHealthPacket extends DataPacket{
 	/** @var int */
 	public $health;
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->health = $this->getVarInt();
 	}
 

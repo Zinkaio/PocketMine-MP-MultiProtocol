@@ -35,7 +35,7 @@ class RiderJumpPacket extends DataPacket{
 	/** @var int */
 	public $unknown;
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->unknown = $this->getVarInt();
 	}
 

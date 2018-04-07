@@ -40,7 +40,7 @@ class ShowCreditsPacket extends DataPacket{
 	/** @var int */
 	public $status;
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->playerEid = $this->getEntityRuntimeId();
 		$this->status = $this->getVarInt();
 	}

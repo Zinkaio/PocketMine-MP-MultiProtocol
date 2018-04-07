@@ -35,7 +35,7 @@ class CameraPacket extends DataPacket{
 	/** @var int */
 	public $playerUniqueId;
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->cameraUniqueId = $this->getEntityUniqueId();
 		$this->playerUniqueId = $this->getEntityUniqueId();
 	}

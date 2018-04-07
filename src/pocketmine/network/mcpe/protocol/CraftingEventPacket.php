@@ -49,7 +49,7 @@ class CraftingEventPacket extends DataPacket{
 		return parent::clean();
 	}
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->windowId = $this->getByte();
 		$this->type = $this->getVarInt();
 		$this->id = $this->getUUID();

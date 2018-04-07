@@ -60,7 +60,7 @@ class CommandBlockUpdatePacket extends DataPacket{
 	/** @var bool */
 	public $shouldTrackOutput;
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->isBlock = $this->getBool();
 
 		if($this->isBlock){

@@ -38,7 +38,7 @@ class EntityFallPacket extends DataPacket{
 	/** @var bool */
 	public $isInVoid;
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->fallDistance = $this->getLFloat();
 		$this->isInVoid = $this->getBool();

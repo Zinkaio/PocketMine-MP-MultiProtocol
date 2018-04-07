@@ -35,7 +35,7 @@ class MapInfoRequestPacket extends DataPacket{
 	/** @var int */
 	public $mapId;
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->mapId = $this->getEntityUniqueId();
 	}
 

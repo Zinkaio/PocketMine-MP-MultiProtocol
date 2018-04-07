@@ -40,7 +40,7 @@ class DisconnectPacket extends DataPacket{
 		return true;
 	}
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->hideDisconnectionScreen = $this->getBool();
 		$this->message = $this->getString();
 	}

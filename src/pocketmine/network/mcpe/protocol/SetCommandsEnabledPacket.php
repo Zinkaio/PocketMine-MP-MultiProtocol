@@ -34,7 +34,7 @@ class SetCommandsEnabledPacket extends DataPacket{
 	/** @var bool */
 	public $enabled;
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->enabled = $this->getBool();
 	}
 

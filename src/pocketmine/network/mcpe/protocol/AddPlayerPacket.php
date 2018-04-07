@@ -29,8 +29,6 @@ use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
-
-use pocketmine\Player;
 use pocketmine\utils\UUID;
 
 class AddPlayerPacket extends DataPacket{
@@ -65,9 +63,6 @@ class AddPlayerPacket extends DataPacket{
 	/** @var array */
 	public $metadata = [];
 
-    /** @var Player */
-    public $player;
-
 	//TODO: adventure settings stuff
 	public $uvarint1 = 0;
 	public $uvarint2 = 0;
@@ -80,18 +75,14 @@ class AddPlayerPacket extends DataPacket{
 	/** @var EntityLink[] */
 	public $links = [];
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->uuid = $this->getUUID();
 		$this->username = $this->getString();
-        if($protocol === 223){
-            $this->thirdPartyName = $this->getString();
-            $this->platform = $this->getVarInt();
-        }
+		$this->thirdPartyName = $this->getString();
+		$this->platform = $this->getVarInt();
 		$this->entityUniqueId = $this->getEntityUniqueId();
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
-        if($protocol === 223){
-            $this->platformChatId = $this->getString();
-        }
+		$this->platformChatId = $this->getString();
 		$this->position = $this->getVector3();
 		$this->motion = $this->getVector3();
 		$this->pitch = $this->getLFloat();
@@ -117,15 +108,11 @@ class AddPlayerPacket extends DataPacket{
 	protected function encodePayload(){
 		$this->putUUID($this->uuid);
 		$this->putString($this->username);
-        if($this->player->protocol === 223){
-            $this->putString($this->thirdPartyName);
-            $this->putVarInt($this->platform);
-        }
+		$this->putString($this->thirdPartyName);
+		$this->putVarInt($this->platform);
 		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
 		$this->putEntityRuntimeId($this->entityRuntimeId);
-        if($this->player->protocol === 223){
-            $this->putString($this->platformChatId);
-        }
+		$this->putString($this->platformChatId);
 		$this->putVector3($this->position);
 		$this->putVector3Nullable($this->motion);
 		$this->putLFloat($this->pitch);

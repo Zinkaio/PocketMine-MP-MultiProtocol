@@ -29,7 +29,6 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\entity\Skin;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
-use pocketmine\Player;
 
 class PlayerListPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::PLAYER_LIST_PACKET;
@@ -40,17 +39,14 @@ class PlayerListPacket extends DataPacket{
 	/** @var PlayerListEntry[] */
 	public $entries = [];
 	/** @var int */
-    public $type;
-
-    /** @var Player */
-    public $player;
+	public $type;
 
 	public function clean(){
 		$this->entries = [];
 		return parent::clean();
 	}
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->type = $this->getByte();
 		$count = $this->getUnsignedVarInt();
 		for($i = 0; $i < $count; ++$i){
@@ -60,10 +56,8 @@ class PlayerListPacket extends DataPacket{
 				$entry->uuid = $this->getUUID();
 				$entry->entityUniqueId = $this->getEntityUniqueId();
 				$entry->username = $this->getString();
-                if($protocol === 223){
-                    $entry->thirdPartyName = $this->getString();
-                    $entry->platform = $this->getVarInt();
-                }
+				$entry->thirdPartyName = $this->getString();
+				$entry->platform = $this->getVarInt();
 
 				$skinId = $this->getString();
 				$skinData = $this->getString();
@@ -79,9 +73,7 @@ class PlayerListPacket extends DataPacket{
 					$geometryData
 				);
 				$entry->xboxUserId = $this->getString();
-                if($protocol === 223){
-                    $this->getString(); //unknown
-                }
+				$this->getString(); //unknown
 			}else{
 				$entry->uuid = $this->getUUID();
 			}
@@ -98,19 +90,15 @@ class PlayerListPacket extends DataPacket{
 				$this->putUUID($entry->uuid);
 				$this->putEntityUniqueId($entry->entityUniqueId);
 				$this->putString($entry->username);
-                if($this->player->protocol === 223){
-                    $this->putString($entry->thirdPartyName);
-                    $this->putVarInt($entry->platform);
-                }
+				$this->putString($entry->thirdPartyName);
+				$this->putVarInt($entry->platform);
 				$this->putString($entry->skin->getSkinId());
 				$this->putString($entry->skin->getSkinData());
 				$this->putString($entry->skin->getCapeData());
 				$this->putString($entry->skin->getGeometryName());
 				$this->putString($entry->skin->getGeometryData());
 				$this->putString($entry->xboxUserId);
-                if($this->player->protocol === 223){
-                    $this->putString("");
-                }
+				$this->putString("");
 			}else{
 				$this->putUUID($entry->uuid);
 			}

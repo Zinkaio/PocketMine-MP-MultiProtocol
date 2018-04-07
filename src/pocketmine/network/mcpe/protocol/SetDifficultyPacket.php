@@ -34,7 +34,7 @@ class SetDifficultyPacket extends DataPacket{
 	/** @var int */
 	public $difficulty;
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->difficulty = $this->getUnsignedVarInt();
 	}
 

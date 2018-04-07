@@ -43,7 +43,7 @@ class MobEquipmentPacket extends DataPacket{
 	/** @var int */
 	public $windowId = 0;
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->item = $this->getSlot();
 		$this->inventorySlot = $this->getByte();

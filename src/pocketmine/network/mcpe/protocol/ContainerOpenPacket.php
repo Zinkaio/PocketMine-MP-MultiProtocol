@@ -44,7 +44,7 @@ class ContainerOpenPacket extends DataPacket{
 	/** @var int */
 	public $entityUniqueId = -1;
 
-	protected function decodePayload(int $protocol){
+	protected function decodePayload(){
 		$this->windowId = $this->getByte();
 		$this->type = $this->getByte();
 		$this->getBlockPosition($this->x, $this->y, $this->z);
