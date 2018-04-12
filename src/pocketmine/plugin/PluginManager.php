@@ -210,9 +210,6 @@ class PluginManager{
 						continue;
 					}
 					$file = $directory . $file;
-					if(!$loader->canLoadPlugin($file)){
-						continue;
-					}
 					try{
 						$description = $loader->getPluginDescription($file);
 						if($description instanceof PluginDescription){
