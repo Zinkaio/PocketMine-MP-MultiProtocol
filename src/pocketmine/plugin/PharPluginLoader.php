@@ -101,11 +101,6 @@ class PharPluginLoader implements PluginLoader{
 		return "/\\.phar$/i";
 	}
 
-	public function canLoadPlugin(string $path) : bool{
-		$ext = ".phar";
-		return is_file($path) and substr($path, -strlen($ext)) === $ext;
-	}
-
 	/**
 	 * @param PluginBase        $plugin
 	 * @param PluginDescription $description
