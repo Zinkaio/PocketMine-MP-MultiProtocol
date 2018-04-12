@@ -1795,6 +1795,24 @@ class Level implements ChunkManager, Metadatable{
 				$ev->setCancelled(); //set it to cancelled so plugins can bypass this
 			}
 
+			if($player->isAdventure(true) and !$ev->isCancelled()){
+				$canPlace = false;
+				$tag = $item->getNamedTagEntry("CanPlaceOn");
+				if($tag instanceof ListTag){
+					foreach($tag as $v){
+						if($v instanceof StringTag){
+							$entry = ItemFactory::fromString($v->getValue());
+							if($entry->getId() > 0 and $entry->getBlock() !== null and $entry->getBlock()->getId() === $blockClicked->getId()){
+								$canPlace = true;
+								break;
+							}
+						}
+					}
+				}
+
+				$ev->setCancelled(!$canPlace);
+			}
+
 			$this->server->getPluginManager()->callEvent($ev);
 			if(!$ev->isCancelled()){
 				if(!$player->isSneaking() and $blockClicked->onActivate($item, $player)){
@@ -1847,24 +1865,6 @@ class Level implements ChunkManager, Metadatable{
 			$ev = new BlockPlaceEvent($player, $hand, $blockReplace, $blockClicked, $item);
 			if($this->checkSpawnProtection($player, $blockClicked)){
 				$ev->setCancelled();
-			}
-
-			if($player->isAdventure(true) and !$ev->isCancelled()){
-				$canPlace = false;
-				$tag = $item->getNamedTagEntry("CanPlaceOn");
-				if($tag instanceof ListTag){
-					foreach($tag as $v){
-						if($v instanceof StringTag){
-							$entry = ItemFactory::fromString($v->getValue());
-							if($entry->getId() > 0 and $entry->getBlock()->getId() === $blockClicked->getId()){
-								$canPlace = true;
-								break;
-							}
-						}
-					}
-				}
-
-				$ev->setCancelled(!$canPlace);
 			}
 
 			$this->server->getPluginManager()->callEvent($ev);
