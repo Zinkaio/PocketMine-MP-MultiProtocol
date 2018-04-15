@@ -361,7 +361,7 @@ class Level implements ChunkManager, Metadatable{
 
 		$dontTickBlocks = array_fill_keys($this->server->getProperty("chunk-ticking.disable-block-ticking", []), true);
 
-		$this->randomTickBlocks = new \SplFixedArray(256);
+		$this->randomTickBlocks = new \SplFixedArray(0);
 		foreach($this->randomTickBlocks as $id => $null){
 			$block = BlockFactory::get($id); //Make sure it's a copy
 			if(!isset($dontTickBlocks[$id]) and $block->ticksRandomly()){

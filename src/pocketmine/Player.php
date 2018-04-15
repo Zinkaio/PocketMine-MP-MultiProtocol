@@ -258,7 +258,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/** @var bool */
 	protected $playedBefore;
 	/** @var int */
-	protected $gamemode;
+	public $gamemode;
 
 	/** @var int */
 	private $loaderId = 0;
@@ -272,11 +272,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/** @var int */
 	protected $viewDistance = -1;
 	/** @var int */
-	protected $spawnThreshold;
+	protected $spawnThreshold = 9 * M_PI;
 	/** @var int */
-	protected $chunkLoadCount = 0;
+	protected $chunkLoadCount = -1;
 	/** @var int */
-	protected $chunksPerTick;
+	protected $chunksPerTick = 10;
 
 	/** @var bool[] map: raw UUID (string) => bool */
 	protected $hiddenPlayers = [];
@@ -555,7 +555,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->spawnThreshold = (int) (min($this->viewDistance, $this->server->getProperty("chunk-sending.spawn-radius", 4)) ** 2 * M_PI);
 
-		$this->nextChunkOrderRun = 0;
+		$this->nextChunkOrderRun = -1;
 
 		$pk = new ChunkRadiusUpdatedPacket();
 		$pk->radius = $this->viewDistance;
@@ -716,7 +716,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->port = $port;
 		$this->loaderId = Level::generateChunkLoaderId($this);
 		$this->chunksPerTick = (int) $this->server->getProperty("chunk-sending.per-tick", 4);
-		$this->spawnThreshold = (int) (($this->server->getProperty("chunk-sending.spawn-radius", 4) ** 2) * M_PI);
+		//$this->spawnThreshold = (int) (($this->server->getProperty("chunk-sending.spawn-radius", 4) ** 2) * M_PI);
 		$this->gamemode = $this->server->getGamemode();
 		$this->setLevel($this->server->getDefaultLevel());
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
@@ -982,7 +982,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		Timings::$playerChunkSendTimer->startTiming();
 
-		$count = 0;
+		$count = -1;
 		foreach($this->loadQueue as $index => $distance){
 			if($count >= $this->chunksPerTick){
 				break;
@@ -1066,7 +1066,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		Timings::$playerChunkOrderTimer->startTiming();
 
-		$this->nextChunkOrderRun = 200;
+		$this->nextChunkOrderRun = 20;
 
 		$radius = $this->server->getAllowedViewDistance($this->viewDistance);
 		$radiusSquared = $radius ** 2;
@@ -1538,7 +1538,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			 */
 			$this->server->getLogger()->warning($this->getName() . " moved too fast, reverting movement");
 			$this->server->getLogger()->debug("Old position: " . $this->asVector3() . ", new position: " . $this->newPosition);
-			$revert = true;
+			$revert = false; //edited to false
 		}else{
 			$chunkX = $newPos->getFloorX() >> 4;
 			$chunkZ = $newPos->getFloorZ() >> 4;
@@ -1565,7 +1565,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$this->server->getPluginManager()->callEvent($ev);
 
 				if(!$ev->isCancelled()){
-					$revert = true;
+					$revert = false; //edited to false
 					$this->server->getLogger()->warning($this->getServer()->getLanguage()->translateString("pocketmine.player.invalidMove", [$this->getName()]));
 					$this->server->getLogger()->debug("Old position: " . $this->asVector3() . ", new position: " . $this->newPosition);
 				}
@@ -3655,7 +3655,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		$this->sendData($this);
-		$this->sendData($this->getViewers());
 
 		$this->sendSettings();
 		$this->inventory->sendContents($this);
