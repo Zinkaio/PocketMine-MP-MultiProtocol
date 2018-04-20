@@ -473,7 +473,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	protected $server;
 
 	/** @var bool */
-	protected $closed = false;
+	public $closed = false;
 	/** @var bool */
 	private $needsDespawn = false;
 
