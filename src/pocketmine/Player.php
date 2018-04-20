@@ -716,7 +716,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->port = $port;
 		$this->loaderId = Level::generateChunkLoaderId($this);
 		$this->chunksPerTick = (int) $this->server->getProperty("chunk-sending.per-tick", 4);
-		//$this->spawnThreshold = (int) (($this->server->getProperty("chunk-sending.spawn-radius", 4) ** 2) * M_PI);
+		$this->spawnThreshold = (int) (($this->server->getProperty("chunk-sending.spawn-radius", 4) ** 2) * M_PI);
 		$this->gamemode = $this->server->getGamemode();
 		$this->setLevel($this->server->getDefaultLevel());
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
@@ -1544,7 +1544,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$chunkZ = $newPos->getFloorZ() >> 4;
 
 			if(!$this->level->isChunkLoaded($chunkX, $chunkZ) or !$this->level->isChunkGenerated($chunkX, $chunkZ)){
-				$revert = true;
+				$revert = false;
 				$this->nextChunkOrderRun = 0;
 			}
 		}
